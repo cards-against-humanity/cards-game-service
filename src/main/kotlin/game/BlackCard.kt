@@ -4,5 +4,5 @@ interface BlackCard {
     val id: String
     val cardpackId: String
     val text: String
-    val answerFields: String
+    val answerFields: Int
 }
