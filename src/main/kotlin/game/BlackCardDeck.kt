@@ -5,7 +5,7 @@ import java.lang.IllegalArgumentException
 class BlackCardDeck(cards: List<BlackCard>) {
 
     var currentCard: BlackCard private set
-    private var drawPile: MutableList<BlackCard> = cards as MutableList
+    private var drawPile: MutableList<BlackCard> = cards.toMutableList()
     private var discardPile: MutableList<BlackCard> = ArrayList()
 
     init {
