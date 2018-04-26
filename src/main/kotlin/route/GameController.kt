@@ -68,19 +68,4 @@ class GameController(private val gameManager: GameManager) {
         }
     }
 
-    @RequestMapping(value = "/{userId}/game/play/{cardId}", method = [RequestMethod.PUT])
-    @ApiOperation(value = "Play a card")
-    @ApiResponses(
-            ApiResponse(code = 204, message = "Play succeeded"),
-            ApiResponse(code = 403, message = "Invalid authorization")
-    )
-    fun playCard(@PathVariable userId: String, @PathVariable cardId: String): ResponseEntity<Any> {
-        return try {
-            gameManager.play(userId, cardId) // TODO - Handle other exception types
-            ResponseEntity.noContent().build()
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
-    }
-
 }
