@@ -8,15 +8,6 @@ class PlayerManager {
     var judge: Player? = null
         private set
 
-    fun containsUser(userId: String): Boolean {
-        _players.forEach { player ->
-            if (player.value.id == userId) {
-                return true
-            }
-        }
-        return false
-    }
-
     fun addUser(userId: String) {
         assertNotInGame(userId)
         val player = InternalPlayer(userId)
@@ -34,13 +25,13 @@ class PlayerManager {
     }
 
     private fun assertInGame(userId: String) {
-        if (!containsUser(userId)) {
+        if (!_players.contains(userId)) {
             throw Exception("User is not in the game")
         }
     }
 
     private fun assertNotInGame(userId: String) {
-        if (containsUser(userId)) {
+        if (_players.contains(userId)) {
             throw Exception("User is already in the game")
         }
     }
