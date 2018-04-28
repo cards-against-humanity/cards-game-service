@@ -2,8 +2,7 @@ import game.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 class PlayerManagerTest {
 
@@ -52,6 +51,20 @@ class PlayerManagerTest {
         playerManager.addUser("1")
         val e = assertThrows(Exception::class.java, { playerManager.addUser("1") })
         assertEquals("User is already in the game", e.message)
+    }
+
+    @Test
+    fun removeUser() {
+        playerManager.addUser("1")
+        playerManager.removeUser("1")
+        val player = playerManager.players["1"]
+        assertNull(player)
+    }
+
+    @Test
+    fun removeNonExistentUser() {
+        val e = assertThrows(Exception::class.java, { playerManager.removeUser("1") })
+        assertEquals("User is not in the game", e.message)
     }
 
 }
