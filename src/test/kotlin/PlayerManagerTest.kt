@@ -169,4 +169,19 @@ class PlayerManagerTest {
         assertNotEquals(judgeId, playerManager.judge!!.id)
     }
 
+    @Test
+    fun removeJudgesOneAtATime() {
+        for (i in 1..10) {
+            playerManager.addUser(i.toString())
+        }
+        playerManager.nextJudge()
+        for (i in 1..9) {
+            val judgeId = playerManager.judge!!.id
+            playerManager.removeUser(judgeId)
+            assertNotEquals(judgeId, playerManager.judge!!.id)
+        }
+        playerManager.removeUser(playerManager.judge!!.id)
+        assertNull(playerManager.judge)
+    }
+
 }

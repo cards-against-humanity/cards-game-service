@@ -35,7 +35,11 @@ class PlayerManager {
             if (judgeIndex == _playersList.size) {
                 judgeIndex = 0
             }
-            judge = _playersList[judgeIndex]
+            judge = if (!_playersList.isEmpty()) {
+                _playersList[judgeIndex]
+            } else {
+                null
+            }
         }
     }
 
