@@ -5,12 +5,17 @@ class PlayerManager {
     private val _players: MutableMap<String, InternalPlayer> = HashMap()
 
     val players: Map<String, Player> get() { return _players }
+    var owner: Player? = null
+        private set
     var judge: Player? = null
         private set
 
     fun addUser(userId: String) {
         assertNotInGame(userId)
         val player = InternalPlayer(userId)
+        if (_players.isEmpty()) {
+            owner = player
+        }
         _players[userId] = player
         _playersList.add(player)
     }
@@ -18,6 +23,16 @@ class PlayerManager {
     fun removeUser(userId: String) {
         assertInGame(userId)
         _players.remove(userId)
+        _playersList.removeIf { player -> player.id == userId }
+        if (_players.isEmpty()) {
+            owner = null
+        } else if (owner != null && userId == owner!!.id) {
+            owner = _playersList[0]
+        }
+    }
+
+    fun nextJudge() {
+        // TODO - Implement and test
     }
 
     fun resetScores() {
