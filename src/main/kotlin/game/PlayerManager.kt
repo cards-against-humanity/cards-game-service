@@ -1,6 +1,6 @@
 package game
 
-class PlayerManager {
+class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
     private val _playersList: MutableList<InternalPlayer> = ArrayList()
     private val _players: MutableMap<String, InternalPlayer> = HashMap()
 
@@ -72,13 +72,16 @@ class PlayerManager {
         }
     }
 
-    private class InternalPlayer(userId: String): Player {
+    private inner class InternalPlayer(userId: String): Player {
 
         override val id: String = userId
         override var score = 0
         override val hand: MutableList<WhiteCard> = ArrayList()
 
         init {
+            while (hand.size < handSize) {
+                hand.add(deck.drawCard())
+            }
         }
 
         override fun incrementScore() {

@@ -6,11 +6,18 @@ import kotlin.test.*
 
 class PlayerManagerTest {
 
-    var playerManager = PlayerManager()
+    val handSize = 4
+    var deck: WhiteCardDeck = WhiteCardDeck(listOf())
+    var playerManager = PlayerManager(handSize, deck)
 
     @BeforeEach
     fun reset() {
-        playerManager = PlayerManager()
+        val cards = ArrayList<WhiteCard>()
+        for (i in 1..1000) {
+            cards.add(TestWhiteCard(i.toString(), "1", i.toString()))
+        }
+        deck = WhiteCardDeck(cards)
+        playerManager = PlayerManager(handSize, deck)
     }
 
     @Test
@@ -183,5 +190,17 @@ class PlayerManagerTest {
         playerManager.removeUser(playerManager.judge!!.id)
         assertNull(playerManager.judge)
     }
+
+    @Test
+    fun addCardsToPlayerHands() {
+        playerManager.addUser("1")
+        assertEquals(handSize, playerManager.players["1"]!!.hand.size)
+    }
+
+    private class TestWhiteCard(
+            override val id: String,
+            override val cardpackId: String,
+            override val text: String
+    ) : WhiteCard
 
 }
