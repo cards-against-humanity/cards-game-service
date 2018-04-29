@@ -40,7 +40,7 @@ class PlayerManagerTest {
             }
             players.add(player)
         }
-        playerManager.resetScores()
+        playerManager.reset()
         players.forEach { player ->
             assertEquals(0, player.score)
         }
@@ -100,6 +100,73 @@ class PlayerManagerTest {
         assertEquals("3", playerManager.owner!!.id)
         playerManager.removeUser("3")
         assertEquals("4", playerManager.owner!!.id)
+    }
+
+    @Test
+    fun nullJudgeByDefault() {
+        playerManager.addUser("1")
+        assertNull(playerManager.judge)
+    }
+
+    @Test
+    fun assignJudge() {
+        playerManager.addUser("1")
+        playerManager.nextJudge()
+        assertNotNull(playerManager.judge)
+        assertEquals("1", playerManager.judge!!.id)
+    }
+
+    @Test
+    fun cycleThroughJudgesWithoutError() {
+        for (i in 1..20) {
+            playerManager.addUser(i.toString())
+        }
+        for (i in 1..200) {
+            playerManager.nextJudge()
+        }
+    }
+
+    @Test
+    fun cycleThroughJudgesLinearly() {
+        for (i in 1..20) {
+            playerManager.addUser(i.toString())
+        }
+
+        for (i in 1..10) {
+            val judgeCounts: MutableMap<String, Int> = HashMap()
+            for (j in 1..20) {
+                playerManager.nextJudge()
+                if (judgeCounts[playerManager.judge!!.id] == null) {
+                    judgeCounts[playerManager.judge!!.id] = 1
+                } else {
+                    judgeCounts[playerManager.judge!!.id]!!.inc()
+                }
+            }
+
+            for (j in 1..20) {
+                assertEquals(1, judgeCounts[i.toString()])
+            }
+        }
+    }
+
+    @Test
+    fun resetJudge() {
+        playerManager.addUser("1")
+        playerManager.nextJudge()
+        playerManager.reset()
+        assertNull(playerManager.judge)
+    }
+
+    @Test
+    fun reassignJudgeWhenCurrentJudgeLeaves() {
+        playerManager.addUser("1")
+        playerManager.addUser("2")
+        playerManager.addUser("3")
+        playerManager.addUser("4")
+        playerManager.nextJudge()
+        val judgeId = playerManager.judge!!.id
+        playerManager.removeUser(judgeId)
+        assertNotEquals(judgeId, playerManager.judge!!.id)
     }
 
 }

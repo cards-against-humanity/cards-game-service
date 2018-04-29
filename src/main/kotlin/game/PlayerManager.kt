@@ -22,6 +22,7 @@ class PlayerManager {
 
     fun removeUser(userId: String) {
         assertInGame(userId)
+        var judgeIndex = _playersList.indexOf(judge)
         _players.remove(userId)
         _playersList.removeIf { player -> player.id == userId }
         if (_players.isEmpty()) {
@@ -29,14 +30,30 @@ class PlayerManager {
         } else if (owner != null && userId == owner!!.id) {
             owner = _playersList[0]
         }
+
+        if (judge != null && judge!!.id == userId) {
+            if (judgeIndex == _playersList.size) {
+                judgeIndex = 0
+            }
+            judge = _playersList[judgeIndex]
+        }
     }
 
     fun nextJudge() {
-        // TODO - Implement and test
+        if (judge == null) {
+            judge = _playersList.shuffled()[0]
+        } else {
+            var index = _playersList.indexOf(judge) + 1
+            if (index == _playersList.size) {
+                index = 0
+            }
+            judge = _playersList[index]
+        }
     }
 
-    fun resetScores() {
+    fun reset() {
         _players.forEach { p -> p.value.score = 0 }
+        judge = null
     }
 
     private fun assertInGame(userId: String) {
