@@ -23,7 +23,7 @@ class GameTest {
         for (i in 1..100) {
             blackCards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
         }
-        return Game(1, whiteCards, blackCards)
+        return Game(3, whiteCards, blackCards)
     }
 
     @BeforeEach
