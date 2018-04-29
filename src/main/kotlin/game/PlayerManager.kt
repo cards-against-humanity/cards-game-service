@@ -23,6 +23,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
     fun removeUser(userId: String) {
         assertInGame(userId)
         var judgeIndex = _playersList.indexOf(judge)
+        _players[userId]!!.hand.forEach { card -> deck.discardCard(card) }
         _players.remove(userId)
         _playersList.removeIf { player -> player.id == userId }
         if (_players.isEmpty()) {

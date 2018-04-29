@@ -7,13 +7,14 @@ import kotlin.test.*
 class PlayerManagerTest {
 
     val handSize = 4
+    val deckSize = 1000
     var deck: WhiteCardDeck = WhiteCardDeck(listOf())
     var playerManager = PlayerManager(handSize, deck)
 
     @BeforeEach
     fun reset() {
         val cards = ArrayList<WhiteCard>()
-        for (i in 1..1000) {
+        for (i in 1..deckSize) {
             cards.add(TestWhiteCard(i.toString(), "1", i.toString()))
         }
         deck = WhiteCardDeck(cards)
@@ -203,6 +204,14 @@ class PlayerManagerTest {
         val player = playerManager.players["1"]!!
         player.playCard(player.hand[0].id)
         assertEquals(handSize, playerManager.players["1"]!!.hand.size)
+    }
+
+    @Test
+    fun discardPlayerHandWhenLeavingGame() {
+        for (i in 1..(deckSize * 10)) {
+            playerManager.addUser("1")
+            playerManager.removeUser("1")
+        }
     }
 
     private class TestWhiteCard(
