@@ -6,4 +6,5 @@ interface Player {
     val hand: List<WhiteCard>
 
     fun incrementScore()
+    fun playCard(cardId: String): WhiteCard
 }

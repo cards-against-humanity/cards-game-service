@@ -88,5 +88,12 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
             score++
         }
 
+        override fun playCard(cardId: String): WhiteCard {
+            val card = hand.find { card -> card.id == cardId } ?: throw Exception("User does not have that card in their hand")
+            hand.add(deck.drawCard())
+            hand.removeAt(hand.indexOf(card))
+            return card
+        }
+
     }
 }

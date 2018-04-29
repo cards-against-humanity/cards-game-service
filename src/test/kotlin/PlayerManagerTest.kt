@@ -197,6 +197,14 @@ class PlayerManagerTest {
         assertEquals(handSize, playerManager.players["1"]!!.hand.size)
     }
 
+    @Test
+    fun playingCardsDrawsNewCardsAutomatically() {
+        playerManager.addUser("1")
+        val player = playerManager.players["1"]!!
+        player.playCard(player.hand[0].id)
+        assertEquals(handSize, playerManager.players["1"]!!.hand.size)
+    }
+
     private class TestWhiteCard(
             override val id: String,
             override val cardpackId: String,
