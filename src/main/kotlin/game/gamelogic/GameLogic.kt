@@ -1,4 +1,6 @@
-package game
+package game.gamelogic
+
+import game.*
 
 class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
     private val handSize = 4

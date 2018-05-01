@@ -1,5 +1,6 @@
-package game
+package game.gamelogic
 
+import game.BlackCard
 import java.lang.IllegalArgumentException
 
 class BlackCardDeck(cards: List<BlackCard>) {

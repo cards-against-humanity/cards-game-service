@@ -1,12 +1,9 @@
-import game.BlackCard
-import game.BlackCardDeck
 import game.WhiteCard
-import game.WhiteCardDeck
+import game.gamelogic.WhiteCardDeck
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class WhiteCardDeckTest {
 

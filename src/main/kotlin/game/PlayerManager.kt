@@ -1,5 +1,7 @@
 package game
 
+import game.gamelogic.WhiteCardDeck
+
 class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
     private val _playersList: MutableList<InternalPlayer> = ArrayList()
     private val _players: MutableMap<String, InternalPlayer> = HashMap()

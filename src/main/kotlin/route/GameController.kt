@@ -1,6 +1,6 @@
 package route
 
-import game.GameLogic
+import game.gamelogic.GameLogic
 import game.GameManager
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse

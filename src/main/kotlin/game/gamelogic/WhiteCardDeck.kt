@@ -1,4 +1,6 @@
-package game
+package game.gamelogic
+
+import game.WhiteCard
 
 class WhiteCardDeck(cards: List<WhiteCard>) {
 

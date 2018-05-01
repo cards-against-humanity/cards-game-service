@@ -1,5 +1,7 @@
 package game
 
+import game.gamelogic.GameLogic
+
 class GameManager {
 
     private val gamesByName: MutableMap<String, GameLogic> = HashMap()
