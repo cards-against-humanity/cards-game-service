@@ -3,7 +3,9 @@ package game
 class Game(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
     private val handSize = 4
 
-    private var stage: GameStage = GameStage.NOT_RUNNING
+    var stage: GameStage = GameStage.NOT_RUNNING
+        private set
+
     private var whitePlayed: MutableMap<String, MutableList<WhiteCard>> = HashMap()
     private var whiteDeck = WhiteCardDeck(whiteCards)
     private var blackDeck = BlackCardDeck(blackCards)
@@ -12,10 +14,10 @@ class Game(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards:
     private val isRunning: Boolean
         get() = stage != GameStage.NOT_RUNNING
 
-    private val ownerId: String?
+    val ownerId: String?
         get() = if (playerManager.owner != null) { playerManager.owner!!.id } else { null }
 
-    private val judgeId: String?
+    val judgeId: String?
         get() = if (playerManager.judge != null) { playerManager.judge!!.id } else { null }
 
     private val players: Map<String, Player>
