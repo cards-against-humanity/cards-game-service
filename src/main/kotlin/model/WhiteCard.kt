@@ -1,8 +1,7 @@
-package game
+package model
 
-interface BlackCard {
+interface WhiteCard {
     val id: String
     val cardpackId: String
     val text: String
-    val answerFields: Int
 }

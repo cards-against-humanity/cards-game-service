@@ -1,7 +1,7 @@
 package game.gamelogic
 
 import game.Player
-import game.WhiteCard
+import model.WhiteCard
 
 class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
     private val _playersList: MutableList<InternalPlayer> = ArrayList()

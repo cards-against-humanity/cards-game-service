@@ -1,6 +1,6 @@
 package game.gamelogic
 
-import game.WhiteCard
+import model.WhiteCard
 
 class WhiteCardDeck(cards: List<WhiteCard>) {
 
