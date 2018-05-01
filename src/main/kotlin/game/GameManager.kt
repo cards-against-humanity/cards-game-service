@@ -2,10 +2,10 @@ package game
 
 class GameManager {
 
-    private val gamesByName: MutableMap<String, Game> = HashMap()
-    private val gamesByUserId: MutableMap<String, Game> = HashMap()
+    private val gamesByName: MutableMap<String, GameLogic> = HashMap()
+    private val gamesByUserId: MutableMap<String, GameLogic> = HashMap()
 
-    fun createGame(userId: String, gameName: String, cardpackIds: List<String>): Game.FOVGameInfo {
+    fun createGame(userId: String, gameName: String, cardpackIds: List<String>): GameLogic.FOVGameInfo {
         TODO()
     }
 
@@ -27,11 +27,11 @@ class GameManager {
     }
 
 
-    fun getUserFOV(userId: String): Game.FOVGameInfo? {
+    fun getUserFOV(userId: String): GameLogic.FOVGameInfo? {
         TODO()
     }
 
-    fun getInfoList(): List<Game.Info> {
+    fun getInfoList(): List<GameLogic.Info> {
         TODO()
     }
 

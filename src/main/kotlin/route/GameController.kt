@@ -1,6 +1,6 @@
 package route
 
-import game.Game
+import game.GameLogic
 import game.GameManager
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
@@ -17,7 +17,7 @@ class GameController(private val gameManager: GameManager) {
     @ApiResponses(
             ApiResponse(code = 200, message = "Games retrieved")
     )
-    fun getGameInfoList(): ResponseEntity<List<Game.Info>> {
+    fun getGameInfoList(): ResponseEntity<List<GameLogic.Info>> {
         return try {
             ResponseEntity.ok(gameManager.getInfoList())
         } catch (e: Exception) {
@@ -30,7 +30,7 @@ class GameController(private val gameManager: GameManager) {
     @ApiResponses(
             ApiResponse(code = 200, message = "Game info retrieved")
     )
-    fun getGameForUser(@PathVariable userId: String): ResponseEntity<Game.FOVGameInfo> {
+    fun getGameForUser(@PathVariable userId: String): ResponseEntity<GameLogic.FOVGameInfo> {
         return try {
             ResponseEntity.ok(gameManager.getUserFOV(userId))
         } catch (e: Exception) {

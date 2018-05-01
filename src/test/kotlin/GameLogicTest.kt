@@ -1,20 +1,20 @@
 import game.BlackCard
-import game.Game
+import game.GameLogic
 import game.WhiteCard
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class GameTest {
+class GameLogicTest {
 
-    private var game: Game
+    private var game: GameLogic
 
     init {
         game = createGame()
     }
 
-    private fun createGame(): Game {
+    private fun createGame(): GameLogic {
         val whiteCards: MutableList<WhiteCard> = ArrayList()
         val blackCards: MutableList<BlackCard> = ArrayList()
         for (i in 1..100) {
@@ -23,7 +23,7 @@ class GameTest {
         for (i in 1..100) {
             blackCards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
         }
-        return Game(4, whiteCards, blackCards)
+        return GameLogic(4, whiteCards, blackCards)
     }
 
     @BeforeEach
@@ -80,7 +80,7 @@ class GameTest {
     @Test
     fun gameSetToPlayPhaseWhenStarted() {
         addUsersAndStartGame()
-        assertEquals(Game.GameStage.PLAY_PLASE, game.stage)
+        assertEquals(GameLogic.GameStage.PLAY_PLASE, game.stage)
     }
 
     private class TestWhiteCard(
