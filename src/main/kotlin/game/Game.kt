@@ -45,6 +45,7 @@ class Game(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards:
             throw Exception("Must have at least 3 players to start game")
         }
 
+        playerManager.nextJudge()
         stage = GameStage.PLAY_PLASE
     }
 
