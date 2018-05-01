@@ -1,5 +1,6 @@
+package game.gamelogic
+
 import game.BlackCard
-import game.gamelogic.GameLogic
 import game.WhiteCard
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
