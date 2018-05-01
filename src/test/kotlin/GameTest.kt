@@ -23,7 +23,7 @@ class GameTest {
         for (i in 1..100) {
             blackCards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
         }
-        return Game(3, whiteCards, blackCards)
+        return Game(4, whiteCards, blackCards)
     }
 
     @BeforeEach
@@ -31,33 +31,34 @@ class GameTest {
         game = createGame()
     }
 
-    @Test
-    fun startAndStopWithoutError() {
+    private fun addUsers() {
         game.join("1")
         game.join("2")
         game.join("3")
+        game.join("4")
+    }
 
+    private fun addUsersAndStartGame() {
+        addUsers()
         game.start("1")
+    }
+
+    @Test
+    fun startAndStopWithoutError() {
+        addUsersAndStartGame()
         game.stop("1")
     }
 
     @Test
     fun errorsWhenStoppingGameThatIsNotRunning() {
-        game.join("1")
-        game.join("2")
-        game.join("3")
-
+        addUsers()
         val e = assertThrows(Exception::class.java, { game.stop("1") })
         assertEquals("Game is not running", e.message)
     }
 
     @Test
     fun errorsWhenStartingGameThatIsAlreadyRunning() {
-        game.join("1")
-        game.join("2")
-        game.join("3")
-
-        game.start("1")
+        addUsersAndStartGame()
         val e = assertThrows(Exception::class.java, { game.start("1") })
         assertEquals("Game is already running", e.message)
     }
@@ -65,9 +66,21 @@ class GameTest {
     @Test
     fun cannotAddSameUserTwice() {
         game.join("1")
-
         val e = assertThrows(Exception::class.java, { game.join("1") })
         assertEquals("User is already in the game", e.message)
+    }
+
+    @Test
+    fun cannotVoteDuringPlayPhase() {
+        addUsersAndStartGame()
+        val e = assertThrows(Exception::class.java, { game.voteCard(game.judgeId!!, "") })
+        assertEquals("Cannot vote for a card", e.message)
+    }
+
+    @Test
+    fun gameSetToPlayPhaseWhenStarted() {
+        addUsersAndStartGame()
+        assertEquals(Game.GameStage.PLAY_PLASE, game.stage)
     }
 
     private class TestWhiteCard(
