@@ -23,6 +23,9 @@ class GameManager(private val cardFetcher: CardFetcher) {
         val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
         game.leave(userId)
         gamesByUserId.remove(userId)
+        if (game.isEmpty()) {
+            gamesByName.remove(game.name)
+        }
     }
 
 
@@ -38,11 +41,12 @@ class GameManager(private val cardFetcher: CardFetcher) {
 
 
     fun getUserFOV(userId: String): FOVGameData? {
-        TODO()
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        return game.getFOV(userId)
     }
 
     fun getInfoList(): List<GameInfo> {
-        TODO()
+        return gamesByName.toList().sortedWith(compareBy({it.second.name})).map { game -> game.second.getInfo() }
     }
 
 }
