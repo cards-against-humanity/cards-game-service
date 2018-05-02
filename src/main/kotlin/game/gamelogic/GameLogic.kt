@@ -122,18 +122,10 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         // TODO - Set winner
     }
 
-    fun getFOV(userId: String): FOVGameInfo {
-        TODO()
-    }
-
     enum class GameStage {
         NOT_RUNNING,
         PLAY_PLASE,
         JUDGE_PHASE,
         SCORE_PHASE
     }
-
-    class FOVGameInfo
-
-    class Info
 }
