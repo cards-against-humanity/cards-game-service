@@ -1,4 +1,4 @@
-package game.gamelogic
+package model
 
 import model.WhiteCard
 

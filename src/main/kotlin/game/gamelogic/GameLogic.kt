@@ -2,6 +2,7 @@ package game.gamelogic
 
 import game.*
 import model.BlackCard
+import model.Player
 import model.WhiteCard
 
 class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {

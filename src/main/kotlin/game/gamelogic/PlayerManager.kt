@@ -1,5 +1,6 @@
 package game.gamelogic
 
+import model.Player
 import model.WhiteCard
 
 class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
