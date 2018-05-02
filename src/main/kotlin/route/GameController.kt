@@ -42,32 +42,6 @@ class GameController(private val gameManager: GameManager) {
         return ResponseEntity.noContent().build()
     }
 
-    @RequestMapping(value = "/games", method = [RequestMethod.GET])
-    @ApiOperation(value = "Get a list of all running games")
-    @ApiResponses(
-            ApiResponse(code = 200, message = "Games retrieved")
-    )
-    fun getGameInfoList(): ResponseEntity<List<GameInfo>> {
-        return try {
-            ResponseEntity.ok(gameManager.getInfoList())
-        } catch (e: Exception) {
-            ResponseEntity.notFound().build()
-        }
-    }
-
-    @RequestMapping(value = "/{userId}/game", method = [RequestMethod.GET])
-    @ApiOperation(value = "Get game info for a specific user")
-    @ApiResponses(
-            ApiResponse(code = 200, message = "Game info retrieved")
-    )
-    fun getGameForUser(@PathVariable userId: String): ResponseEntity<FOVGameData> {
-        return try {
-            ResponseEntity.ok(gameManager.getUserFOV(userId))
-        } catch (e: Exception) {
-            ResponseEntity.notFound().build()
-        }
-    }
-
     @RequestMapping(value = "/{userId}/game/vote/{cardId}", method = [RequestMethod.PUT])
     @ApiOperation(value = "Cast vote as judge")
     @ApiResponses(
@@ -95,6 +69,32 @@ class GameController(private val gameManager: GameManager) {
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+    }
+
+    @RequestMapping(value = "/{userId}/game", method = [RequestMethod.GET])
+    @ApiOperation(value = "Get game info for a specific user")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Game info retrieved")
+    )
+    fun getGameForUser(@PathVariable userId: String): ResponseEntity<FOVGameData> {
+        return try {
+            ResponseEntity.ok(gameManager.getUserFOV(userId))
+        } catch (e: Exception) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @RequestMapping(value = "/games", method = [RequestMethod.GET])
+    @ApiOperation(value = "Get a list of all running games")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Games retrieved")
+    )
+    fun getGameInfoList(): ResponseEntity<List<GameInfo>> {
+        return try {
+            ResponseEntity.ok(gameManager.getInfoList())
+        } catch (e: Exception) {
+            ResponseEntity.notFound().build()
         }
     }
 
