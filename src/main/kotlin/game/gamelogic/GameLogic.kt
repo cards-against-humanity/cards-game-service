@@ -25,7 +25,10 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     val judgeId: String?
         get() = if (playerManager.judge != null) { playerManager.judge!!.id } else { null }
 
-    private val players: Map<String, Player>
+    private val _players: Map<String, PlayerManager.MutablePlayer>
+        get() = playerManager.players
+
+    val players: Map<String, Player>
         get() = playerManager.players
 
     init {
@@ -106,7 +109,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("You cannot play anymore cards for this round")
         }
 
-        whitePlayed[userId]!!.add(players[userId]!!.playCard(cardId))
+        whitePlayed[userId]!!.add(_players[userId]!!.playCard(cardId))
 
         if (!players.all { player -> whitePlayed[player.value.id]!!.size == blackDeck.currentCard.answerFields }) {
             stage = GameStage.JUDGE_PHASE
