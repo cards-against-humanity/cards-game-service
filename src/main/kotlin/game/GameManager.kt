@@ -19,10 +19,11 @@ class GameManager(private val cardFetcher: CardFetcher) {
         return gameData
     }
 
-    fun joinGame(userId: String, gameName: String) {
+    fun joinGame(userId: String, gameName: String): FOVGameData {
         val game = gamesByName[gameName] ?: throw Exception("Game does not exist with name: $gameName")
         game.join(userId)
         gamesByUserId[userId] = game
+        return game.getFOV(userId)
     }
 
     fun leaveGame(userId: String) {
