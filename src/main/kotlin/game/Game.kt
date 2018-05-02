@@ -1,20 +1,55 @@
 package game
 
-import model.FOVGameData
-import model.GameInfo
+import game.gamelogic.GameLogic
+import model.*
 
-interface Game {
-    val name: String
+class Game(val name: String, maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>) {
 
-    fun start(userId: String)
-    fun stop(userId: String)
-    fun join(userId: String)
-    fun leave(userId: String)
-    fun kickUser(kickerId: String, kickeeId: String)
-    fun playCard(userId: String, cardId: String)
-    fun voteCard(userId: String, cardId: String)
-    fun isEmpty(): Boolean
+    private val logic = GameLogic(maxPlayers, whiteCards, blackCards)
 
-    fun getFOV(userId: String): FOVGameData
-    fun getInfo(): GameInfo
+    fun start(userId: String) {
+        logic.start(userId)
+    }
+
+    fun stop(userId: String) {
+        logic.stop(userId)
+    }
+
+    fun join(userId: String) {
+        logic.join(userId)
+    }
+
+    fun leave(userId: String) {
+        logic.leave(userId)
+    }
+
+    fun kickUser(kickerId: String, kickeeId: String) {
+        logic.kickUser(kickerId, kickeeId)
+    }
+
+    fun playCard(userId: String, cardId: String) {
+        logic.playCard(userId, cardId)
+    }
+
+    fun voteCard(userId: String, cardId: String) {
+        logic.voteCard(userId, cardId)
+    }
+
+    fun isEmpty(): Boolean {
+        return logic.players.isEmpty()
+    }
+
+
+    fun getFOV(userId: String): FOVGameData {
+        return InternalFOVGameData()
+    }
+
+    fun getInfo(): GameInfo {
+        return InternalGameInfo()
+    }
+
+    class InternalFOVGameData : FOVGameData
+
+    class InternalGameInfo : GameInfo
+
 }
