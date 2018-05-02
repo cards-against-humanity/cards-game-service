@@ -5,6 +5,8 @@ import game.GameManager
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
+import model.FOVGameData
+import model.GameInfo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,7 +19,7 @@ class GameController(private val gameManager: GameManager) {
     @ApiResponses(
             ApiResponse(code = 200, message = "Games retrieved")
     )
-    fun getGameInfoList(): ResponseEntity<List<GameLogic.Info>> {
+    fun getGameInfoList(): ResponseEntity<List<GameInfo>> {
         return try {
             ResponseEntity.ok(gameManager.getInfoList())
         } catch (e: Exception) {
@@ -30,7 +32,7 @@ class GameController(private val gameManager: GameManager) {
     @ApiResponses(
             ApiResponse(code = 200, message = "Game info retrieved")
     )
-    fun getGameForUser(@PathVariable userId: String): ResponseEntity<GameLogic.FOVGameInfo> {
+    fun getGameForUser(@PathVariable userId: String): ResponseEntity<FOVGameData> {
         return try {
             ResponseEntity.ok(gameManager.getUserFOV(userId))
         } catch (e: Exception) {
