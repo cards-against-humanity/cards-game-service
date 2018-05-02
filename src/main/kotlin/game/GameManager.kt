@@ -1,11 +1,10 @@
 package game
 
 import api.*
-import game.gamelogic.GameLogic
 import model.FOVGameData
 import model.GameInfo
 
-class GameManager(cardFetcher: CardFetcher) {
+class GameManager(private val cardFetcher: CardFetcher) {
 
     private val gamesByName: MutableMap<String, Game> = HashMap()
     private val gamesByUserId: MutableMap<String, Game> = HashMap()
@@ -15,20 +14,26 @@ class GameManager(cardFetcher: CardFetcher) {
     }
 
     fun joinGame(userId: String, gameName: String) {
-        TODO()
+        val game = gamesByName[gameName] ?: throw Exception("Game does not exist with name: $gameName")
+        game.join(userId)
+        gamesByUserId[userId] = game
     }
 
     fun leaveGame(userId: String) {
-        TODO()
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        game.leave(userId)
+        gamesByUserId.remove(userId)
     }
 
 
     fun vote(userId: String, cardId: String) {
-        TODO()
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        game.voteCard(userId, cardId)
     }
 
     fun play(userId: String, cardId: String) {
-        TODO()
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        game.playCard(userId, cardId)
     }
 
 
