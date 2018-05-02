@@ -1,13 +1,12 @@
 package game.gamelogic
 
-import game.Player
 import model.WhiteCard
 
 class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
-    private val _playersList: MutableList<InternalPlayer> = ArrayList()
-    private val _players: MutableMap<String, InternalPlayer> = HashMap()
+    private val _playersList: MutableList<MutablePlayer> = ArrayList()
+    private val _players: MutableMap<String, MutablePlayer> = HashMap()
 
-    val players: Map<String, Player> get() { return _players }
+    val players: Map<String, MutablePlayer> get() { return _players }
     var owner: Player? = null
         private set
     var judge: Player? = null
@@ -15,7 +14,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
 
     fun addUser(userId: String) {
         assertNotInGame(userId)
-        val player = InternalPlayer(userId)
+        val player = MutablePlayer(userId)
         if (_players.isEmpty()) {
             owner = player
         }
@@ -76,7 +75,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
     }
 
-    private inner class InternalPlayer(userId: String): Player {
+    inner class MutablePlayer(userId: String): Player {
 
         override val id: String = userId
         override var score = 0
@@ -88,11 +87,11 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
             }
         }
 
-        override fun incrementScore() {
+        fun incrementScore() {
             score++
         }
 
-        override fun playCard(cardId: String): WhiteCard {
+        fun playCard(cardId: String): WhiteCard {
             val card = hand.find { card -> card.id == cardId } ?: throw Exception("User does not have that card in their hand")
             hand.add(deck.drawCard())
             hand.removeAt(hand.indexOf(card))
