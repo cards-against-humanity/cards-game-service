@@ -3,7 +3,7 @@ package game
 import game.gamelogic.GameLogic
 import model.*
 
-class Game(val name: String, maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>) {
+class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>) {
 
     private val logic = GameLogic(maxPlayers, whiteCards, blackCards)
 
@@ -45,11 +45,9 @@ class Game(val name: String, maxPlayers: Int, whiteCards: List<WhiteCard>, black
     }
 
     fun getInfo(): GameInfo {
-        return InternalGameInfo()
+        return GameInfo(name, logic.players.size, maxPlayers, logic.ownerId ?: throw Exception("Game is empty"))
     }
 
     class InternalFOVGameData : FOVGameData
-
-    class InternalGameInfo : GameInfo
 
 }
