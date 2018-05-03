@@ -1,7 +1,6 @@
 package model
 
-import model.WhiteCard
-
+interface Player : HiddenPlayer {
 interface Player {
     val id: String
     val score: Int
