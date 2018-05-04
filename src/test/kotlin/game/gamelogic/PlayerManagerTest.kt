@@ -1,6 +1,6 @@
 package game.gamelogic
 
-import model.Player
+import model.FOVPlayer
 import model.WhiteCard
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -42,7 +42,7 @@ class PlayerManagerTest {
 
     @Test
     fun resetScores() {
-        val players: MutableList<Player> = ArrayList()
+        val players: MutableList<FOVPlayer> = ArrayList()
         for (i in 1..100) {
             playerManager.addUser(i.toString())
             val player = playerManager.players[i.toString()]!!

@@ -1,6 +1,5 @@
 package game.gamelogic
 
-import model.Player
 import model.WhiteCard
 
 class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
@@ -8,9 +7,9 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
     private val _players: MutableMap<String, MutablePlayer> = HashMap()
 
     val players: Map<String, MutablePlayer> get() { return _players }
-    var owner: Player? = null
+    var owner: PlayerGameLogicModel? = null
         private set
-    var judge: Player? = null
+    var judge: PlayerGameLogicModel? = null
         private set
 
     fun addUser(userId: String) {
@@ -76,7 +75,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
     }
 
-    inner class MutablePlayer(userId: String): Player {
+    inner class MutablePlayer(userId: String): PlayerGameLogicModel {
 
         override val id: String = userId
         override var score = 0
