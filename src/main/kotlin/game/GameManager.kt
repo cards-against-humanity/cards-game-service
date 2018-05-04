@@ -4,14 +4,14 @@ import api.*
 import model.FOVGameData
 import model.GameInfo
 
-class GameManager(private val cardFetcher: CardFetcher) {
+class GameManager(private val userFetcher: UserFetcher, private val cardFetcher: CardFetcher) {
 
     private val gamesByName: MutableMap<String, Game> = HashMap()
     private val gamesByUserId: MutableMap<String, Game> = HashMap()
 
     fun createGame(userId: String, gameName: String, maxPlayers: Int, cardpackIds: List<String>): FOVGameData {
         val cards = cardFetcher.getCards(cardpackIds)
-        val game = Game(gameName, maxPlayers, cards.first, cards.second)
+        val game = Game(gameName, maxPlayers, cards.first, cards.second, userFetcher)
         game.join(userId)
         val gameData = game.getFOV(userId)
         gamesByName[gameName] = game
