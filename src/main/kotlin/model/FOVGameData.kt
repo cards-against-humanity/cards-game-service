@@ -5,7 +5,7 @@ data class FOVGameData(
         val maxPlayers: Int,
         val hand: List<WhiteCard>,
         val players: List<FOVPlayer>,
-        val judgeId: String,
+        val judgeId: String?,
         val ownerId: String,
         val whitePlayed: Map<String, List<WhiteCard?>>,
         val currentBlackCard: BlackCard?
