@@ -42,7 +42,7 @@ class PlayerManagerTest {
 
     @Test
     fun resetScores() {
-        val players: MutableList<FOVPlayer> = ArrayList()
+        val players: MutableList<PlayerGameLogicModel> = ArrayList()
         for (i in 1..100) {
             playerManager.addUser(i.toString())
             val player = playerManager.players[i.toString()]!!
