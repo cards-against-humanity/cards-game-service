@@ -1,9 +1,10 @@
 package game
 
+import api.UserFetcher
 import game.gamelogic.GameLogic
 import model.*
 
-class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>) {
+class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
 
     private val logic = GameLogic(maxPlayers, whiteCards, blackCards)
 
@@ -41,13 +42,22 @@ class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, b
 
 
     fun getFOV(userId: String): FOVGameData {
-        return InternalFOVGameData()
+        val users = userFetcher.getUsers(logic.playersList.map { playerEntry -> playerEntry.id })
+        val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score, player.hand) }
+
+        val cardsPlayed: MutableMap<String, List<WhiteCard?>> = HashMap()
+        for (entry in logic.whitePlayed) {
+            cardsPlayed[entry.key] = if (entry.key == userId) {
+                entry.value
+            } else {
+                entry.value.map { _ -> null }
+            }
+        }
+        return FOVGameData(name, maxPlayers, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard)
     }
 
     fun getInfo(): GameInfo {
         return GameInfo(name, logic.players.size, maxPlayers, logic.ownerId ?: throw Exception("Game is empty"))
     }
-
-    class InternalFOVGameData : FOVGameData
 
 }
