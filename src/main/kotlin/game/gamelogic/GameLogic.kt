@@ -30,6 +30,12 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     val players: Map<String, PlayerGameLogicModel>
         get() = playerManager.players
 
+    val playersList: List<PlayerGameLogicModel>
+        get() = playerManager.playersList
+
+    val currentBlackCard: BlackCard?
+        get() = if (isRunning) { blackDeck.currentCard } else { null }
+
     init {
         val minCardCount = maxPlayers * (handSize + 4)
         if (maxPlayers < 3) {

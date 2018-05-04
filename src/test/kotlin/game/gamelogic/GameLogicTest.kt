@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class GameLogicTest {
 
@@ -82,6 +84,20 @@ class GameLogicTest {
     fun gameSetToPlayPhaseWhenStarted() {
         addUsersAndStartGame()
         assertEquals(GameLogic.GameStage.PLAY_PLASE, game.stage)
+    }
+
+    @Test
+    fun currentBlackCardIsNullWhenGameIsNotRunning() {
+        assertNull(game.currentBlackCard)
+        addUsersAndStartGame()
+        game.stop(game.ownerId!!)
+        assertNull(game.currentBlackCard)
+    }
+
+    @Test
+    fun currentBlackCardIsNotNullWhenGameIsRunning() {
+        addUsersAndStartGame()
+        assertNotNull(game.currentBlackCard)
     }
 
     private class TestWhiteCard(
