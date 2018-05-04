@@ -216,6 +216,32 @@ class PlayerManagerTest {
         }
     }
 
+    @Test
+    fun addPlayersToMap() {
+        playerManager.addUser("1")
+        assertNotNull(playerManager.players["1"])
+    }
+
+    @Test
+    fun addPlayersToList() {
+        playerManager.addUser("1")
+        assertEquals("1", playerManager.playersList[0].id)
+    }
+
+    @Test
+    fun removePlayersFromMap() {
+        playerManager.addUser("1")
+        playerManager.removeUser("1")
+        assertNull(playerManager.players["1"])
+    }
+
+    @Test
+    fun removePlayersFromList() {
+        playerManager.addUser("1")
+        playerManager.removeUser("1")
+        assertTrue(playerManager.playersList.isEmpty())
+    }
+
     private class TestWhiteCard(
             override val id: String,
             override val cardpackId: String,

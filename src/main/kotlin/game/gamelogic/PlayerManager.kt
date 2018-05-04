@@ -6,6 +6,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
     private val _playersList: MutableList<MutablePlayer> = ArrayList()
     private val _players: MutableMap<String, MutablePlayer> = HashMap()
 
+    val playersList: List<MutablePlayer> get() { return _playersList }
     val players: Map<String, MutablePlayer> get() { return _players }
     var owner: PlayerGameLogicModel? = null
         private set
