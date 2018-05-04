@@ -1,6 +1,5 @@
 package game.gamelogic
 
-import model.FOVPlayer
 import model.WhiteCard
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
