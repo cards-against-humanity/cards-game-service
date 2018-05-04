@@ -1,8 +1,8 @@
 package model
 
-interface Player : HiddenPlayer {
-interface Player {
+interface FOVPlayer {
     val id: String
+    val name: String
     val score: Int
     val hand: List<WhiteCard>
 }
