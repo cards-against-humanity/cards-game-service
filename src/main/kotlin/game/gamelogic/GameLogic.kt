@@ -44,16 +44,16 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     }
 
     fun start(userId: String) {
-        if (userId != ownerId) {
-            throw InsufficientAccessException("Must be owner to start game")
-        } else if (isRunning) {
-            throw Exception("Game is already running")
-        } else if (players.size < 3) {
-            throw Exception("Must have at least 3 players to start game")
+        when {
+            userId != ownerId -> throw InsufficientAccessException("Must be owner to start game")
+            isRunning -> throw Exception("Game is already running")
+            players.size < 3 -> throw Exception("Must have at least 3 players to start game")
+            else -> {
+                playerManager.nextJudge()
+                stage = GameStage.PLAY_PLASE
+            }
         }
 
-        playerManager.nextJudge()
-        stage = GameStage.PLAY_PLASE
     }
 
     fun stop(userId: String) {
