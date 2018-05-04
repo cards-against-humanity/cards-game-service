@@ -10,7 +10,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     var stage: GameStage = GameStage.NOT_RUNNING
         private set
 
-    private var whitePlayed: MutableMap<String, MutableList<WhiteCard>> = HashMap()
+    private var _whitePlayed: MutableMap<String, MutableList<WhiteCard>> = HashMap()
     private var whiteDeck = WhiteCardDeck(whiteCards)
     private var blackDeck = BlackCardDeck(blackCards)
     private val playerManager: PlayerManager = PlayerManager(handSize, whiteDeck)
@@ -35,6 +35,9 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
 
     val currentBlackCard: BlackCard?
         get() = if (isRunning) { blackDeck.currentCard } else { null }
+
+    val whitePlayed: Map<String, List<WhiteCard>>
+        get() = _whitePlayed
 
     init {
         val minCardCount = maxPlayers * (handSize + 4)
@@ -69,8 +72,8 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Game is not running")
         }
 
-        whitePlayed.forEach { cardList -> cardList.value.forEach { card -> whiteDeck.discardCard(card) } }
-        whitePlayed = HashMap()
+        _whitePlayed.forEach { cardList -> cardList.value.forEach { card -> whiteDeck.discardCard(card) } }
+        _whitePlayed = HashMap()
         whiteDeck.reset()
         blackDeck.reset()
         playerManager.reset()
@@ -84,14 +87,14 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Game is full")
         }
         playerManager.addUser(userId)
-        whitePlayed[userId] = ArrayList()
+        _whitePlayed[userId] = ArrayList()
     }
 
     fun leave(userId: String) {
         // TODO - Check if user was judge and react accordingly
         playerManager.removeUser(userId)
-        whitePlayed[userId]!!.forEach { card -> whiteDeck.discardCard(card) }
-        whitePlayed.remove(userId)
+        _whitePlayed[userId]!!.forEach { card -> whiteDeck.discardCard(card) }
+        _whitePlayed.remove(userId)
     }
 
     fun kickUser(kickerId: String, kickeeId: String) {
@@ -110,13 +113,13 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Cannot play cards right now")
         } else if (players[userId] == null) {
             throw Exception("User is not in the game")
-        } else if (whitePlayed[userId]!!.size == blackDeck.currentCard.answerFields) {
+        } else if (_whitePlayed[userId]!!.size == blackDeck.currentCard.answerFields) {
             throw Exception("You cannot play anymore cards for this round")
         }
 
-        whitePlayed[userId]!!.add(_players[userId]!!.playCard(cardId))
+        _whitePlayed[userId]!!.add(_players[userId]!!.playCard(cardId))
 
-        if (!players.all { player -> whitePlayed[player.value.id]!!.size == blackDeck.currentCard.answerFields }) {
+        if (!players.all { player -> _whitePlayed[player.value.id]!!.size == blackDeck.currentCard.answerFields }) {
             stage = GameStage.JUDGE_PHASE
         }
     }

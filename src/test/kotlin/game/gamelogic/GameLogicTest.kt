@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class GameLogicTest {
 
@@ -98,6 +99,23 @@ class GameLogicTest {
     fun currentBlackCardIsNotNullWhenGameIsRunning() {
         addUsersAndStartGame()
         assertNotNull(game.currentBlackCard)
+    }
+
+    @Test
+    fun syncPlayedCardsListsWithUsersInGame() {
+        assertTrue(game.whitePlayed.isEmpty())
+        game.join("1")
+        assertNotNull(game.whitePlayed["1"])
+        game.leave("1")
+        assertTrue(game.whitePlayed.isEmpty())
+    }
+
+    @Test
+    fun addsPlayedCards() {
+        addUsersAndStartGame()
+        val player = game.playersList.find { player -> player.id != game.judgeId }!!
+        game.playCard(player.id, player.hand[0].id)
+        assertEquals(1, game.whitePlayed[player.id]!!.size)
     }
 
     private class TestWhiteCard(
