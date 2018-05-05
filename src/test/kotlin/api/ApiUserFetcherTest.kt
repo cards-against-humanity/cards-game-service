@@ -65,13 +65,19 @@ class ApiUserFetcherTest {
 
     @Test
     fun getInvalidUser() {
-        val e = assertThrows(Exception::class.java) { ApiUserFetcher(serverUrl).getUser(fakeUserId) }
+        val e = assertThrows(Exception::class.java) { userFetcher.getUser(fakeUserId) }
         assertEquals("User does not exist", e.message)
     }
 
     @Test
     fun apiError() {
-        val e = assertThrows(Exception::class.java) { ApiUserFetcher(serverUrl).getUser(errorUserId) }
+        val e = assertThrows(Exception::class.java) { userFetcher.getUser(errorUserId) }
         assertEquals("An error occured fetching user from the api", e.message)
+    }
+
+    @Test
+    fun doesNotConnectOverHttpWhenSetToSecureOnly() {
+        val e = assertThrows(Exception::class.java) { ApiUserFetcher(serverUrl, true) }
+        assertEquals("Connection to API must be over https unless explicitly specified in the constructor", e.message)
     }
 }
