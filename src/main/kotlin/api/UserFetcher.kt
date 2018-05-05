@@ -3,9 +3,9 @@ package api
 import model.User
 
 interface UserFetcher {
-    fun getUsers(cardpackIds: List<String>): List<User>
+    fun getUsers(userIds: List<String>): List<User>
 
-    fun getUser(cardpackId: String): User {
-        return getUsers(listOf(cardpackId))[0]
+    fun getUser(userId: String): User {
+        return getUsers(listOf(userId))[0]
     }
 }
