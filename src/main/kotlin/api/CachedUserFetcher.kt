@@ -4,9 +4,9 @@ import com.google.common.cache.CacheBuilder
 import model.User
 import java.time.Duration
 
-class CachedUserFetcher(private val fetcher: UserFetcher, maximumSize: Long, itemTimeoutMillis: Long): UserFetcher {
+class CachedUserFetcher(private val fetcher: UserFetcher, maximumSize: Long, itemTimeout: Duration): UserFetcher {
 
-    private val cache = CacheBuilder.newBuilder().maximumSize(maximumSize).expireAfterWrite(Duration.ofMillis(itemTimeoutMillis)).build<String, User>()
+    private val cache = CacheBuilder.newBuilder().maximumSize(maximumSize).expireAfterWrite(itemTimeout).build<String, User>()
 
     override fun getUsers(userIds: List<String>): List<User> {
         val users: MutableMap<String, User> = HashMap()

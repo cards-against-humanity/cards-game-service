@@ -4,12 +4,13 @@ import api.mock.MockUserFetcher
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Duration
 import kotlin.test.assertEquals
 
 class CachedUserFetcherTest {
 
     private val cacheSize = 100L
-    private val cacheTimeout = 500L
+    private val cacheTimeout = Duration.ofMillis(500)
     private var mockFetcher = MockUserFetcher()
     private var cachedFetcher = CachedUserFetcher(mockFetcher, cacheSize, cacheTimeout)
 
@@ -38,7 +39,7 @@ class CachedUserFetcherTest {
     fun removedTimedOutElements() {
         cachedFetcher.getUser(userId)
         mockFetcher.removeUser(userId)
-        Thread.sleep(cacheTimeout)
+        Thread.sleep(cacheTimeout.toMillis())
         assertThrows(NullPointerException::class.java) { cachedFetcher.getUser(userId) }
     }
 
