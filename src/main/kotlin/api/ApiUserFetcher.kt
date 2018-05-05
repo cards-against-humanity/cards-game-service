@@ -9,14 +9,13 @@ import java.net.URL
 
 class ApiUserFetcher(apiUrl: URL, isSecure: Boolean) : UserFetcher {
 
-    constructor(apiUrl: URL) : this(apiUrl, false)
+    constructor(apiUrl: URL) : this(apiUrl, true)
 
-    val apiPath = "${apiUrl.protocol}://${apiUrl.host}:${apiUrl.port}"
-    val client = OkHttpClient()
+    private val apiPath = "${apiUrl.protocol}://${apiUrl.host}:${apiUrl.port}"
+    private val client = OkHttpClient()
 
     init {
         if (isSecure && apiUrl.protocol != "https") {
-            println(apiUrl.protocol)
             throw SecurityException("Connection to API must be over https unless explicitly specified in the constructor")
         }
     }
@@ -29,7 +28,7 @@ class ApiUserFetcher(apiUrl: URL, isSecure: Boolean) : UserFetcher {
             if (response.code() == 404) {
                 throw Exception("User does not exist")
             } else if (response.code() != 200) {
-                throw Exception("An error occured fetching user from the api")
+                throw Exception("An error occurred fetching user from the api")
             }
             val user = ObjectMapper().readValue(response.body()!!.bytes(), ApiUser::class.java)
             users.add(user)
@@ -41,4 +40,5 @@ class ApiUserFetcher(apiUrl: URL, isSecure: Boolean) : UserFetcher {
             @JsonProperty("id") override val id: String,
             @JsonProperty("name") override val name: String
     ) : User
+
 }

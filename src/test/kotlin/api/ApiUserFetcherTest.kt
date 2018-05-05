@@ -72,7 +72,7 @@ class ApiUserFetcherTest {
     @Test
     fun apiError() {
         val e = assertThrows(Exception::class.java) { userFetcher.getUser(errorUserId) }
-        assertEquals("An error occured fetching user from the api", e.message)
+        assertEquals("An error occurred fetching user from the api", e.message)
     }
 
     @Test
