@@ -1,6 +1,10 @@
 package server
 
+import api.ApiCardFetcher
+import api.ApiUserFetcher
+import api.CachedUserFetcher
 import config.SwaggerConfig
+import game.GameManager
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
@@ -9,10 +13,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import route.GameController
+import java.time.Duration
 
 @SpringBootApplication
 @ComponentScan(basePackageClasses = [GameController::class, SwaggerConfig::class])
 open class Main : WebMvcConfigurerAdapter() {
+
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
@@ -33,4 +39,12 @@ open class Main : WebMvcConfigurerAdapter() {
     open fun getArgs(): Args {
         return Args()
     }
+
+    @Bean
+    open fun getGameManager(args: Args): GameManager {
+        val userFetcher = CachedUserFetcher(ApiUserFetcher(args.apiUrl, args.secureApiConnection), 100000, Duration.ofMinutes(30))
+        val cardFetcher = ApiCardFetcher(args.apiUrl, args.secureApiConnection)
+        return GameManager(userFetcher, cardFetcher)
+    }
+
 }
