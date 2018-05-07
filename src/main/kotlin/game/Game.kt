@@ -43,7 +43,7 @@ class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, b
 
     fun getFOV(userId: String): FOVGameData {
         val users = userFetcher.getUsers(logic.playersList.map { playerEntry -> playerEntry.id })
-        val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }
+        val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }.filter { p -> p.id != userId }
 
         val cardsPlayed: MutableMap<String, List<WhiteCard?>> = HashMap()
         for (entry in logic.whitePlayed) {
