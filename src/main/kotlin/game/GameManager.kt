@@ -47,7 +47,7 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
         }
     }
 
-    fun kick(kickerId: String, kickeeId: String) {
+    fun kick(kickerId: String, kickeeId: String): FOVGameData {
         val kickerGame = gamesByUserId[kickerId] ?: throw Exception("Kicker is not in a game")
         val kickeeGame = gamesByUserId[kickeeId] ?: throw Exception("Kickee is not in a game")
 
@@ -56,6 +56,7 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
         }
 
         kickerGame.kickUser(kickerId, kickeeId)
+        return kickerGame.getFOV(kickerId)
     }
 
     fun play(userId: String, cardId: String) {
