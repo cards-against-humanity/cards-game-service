@@ -23,6 +23,28 @@ class GameController(private val gameManager: GameManager) {
         return ResponseEntity.ok(gameManager.createGame(userId, gameData.gameName, gameData.maxPlayers, gameData.cardpackIds))
     }
 
+    @RequestMapping(value = "/{userId}/game/start", method = [RequestMethod.POST])
+    @ApiOperation(value = "Start game")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Successfully started game"),
+            ApiResponse(code = 400, message = "Game is already running or user is not in a game"),
+            ApiResponse(code = 403, message = "User is not the owner")
+    )
+    fun startGame(@PathVariable userId: String, @PathVariable gameName: String): ResponseEntity<FOVGameData> {
+        return ResponseEntity.ok(gameManager.startGame(userId))
+    }
+
+    @RequestMapping(value = "/{userId}/game/stop", method = [RequestMethod.POST])
+    @ApiOperation(value = "Stop game")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Successfully stopped game"),
+            ApiResponse(code = 400, message = "Game is not running or user is not in a game"),
+            ApiResponse(code = 403, message = "User is not the owner")
+    )
+    fun stopGame(@PathVariable userId: String): ResponseEntity<FOVGameData> {
+        return ResponseEntity.ok(gameManager.stopGame(userId))
+    }
+
     @RequestMapping(value = "/{userId}/game/{gameName}/join", method = [RequestMethod.POST])
     @ApiOperation(value = "Join game")
     @ApiResponses(
@@ -42,19 +64,14 @@ class GameController(private val gameManager: GameManager) {
         return ResponseEntity.noContent().build()
     }
 
-    @RequestMapping(value = "/{userId}/game/vote/{cardId}", method = [RequestMethod.PUT])
-    @ApiOperation(value = "Cast vote as judge")
+    @RequestMapping(value = "/{kickerId}/game/players/{kickeeId}", method = [RequestMethod.DELETE])
+    @ApiOperation(value = "Kick user")
     @ApiResponses(
-            ApiResponse(code = 204, message = "Vote succeeded"),
-            ApiResponse(code = 403, message = "Invalid authorization")
+            ApiResponse(code = 200, message = "Successfully kicked user"),
+            ApiResponse(code = 403, message = "Kicker is not the owner")
     )
-    fun vote(@PathVariable userId: String, @PathVariable cardId: String): ResponseEntity<Any> {
-        return try {
-            gameManager.vote(userId, cardId) // TODO - Handle other exception types
-            ResponseEntity.noContent().build()
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
+    fun kickUser(@PathVariable kickerId: String, @PathVariable kickeeId: String): ResponseEntity<FOVGameData> {
+        return ResponseEntity.ok(gameManager.kick(kickerId, kickeeId))
     }
 
     @RequestMapping(value = "/{userId}/game/play/{cardId}", method = [RequestMethod.PUT])
@@ -66,6 +83,21 @@ class GameController(private val gameManager: GameManager) {
     fun playCard(@PathVariable userId: String, @PathVariable cardId: String): ResponseEntity<Any> {
         return try {
             gameManager.play(userId, cardId) // TODO - Handle other exception types
+            ResponseEntity.noContent().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+    }
+
+    @RequestMapping(value = "/{userId}/game/vote/{cardId}", method = [RequestMethod.PUT])
+    @ApiOperation(value = "Cast vote as judge")
+    @ApiResponses(
+            ApiResponse(code = 204, message = "Vote succeeded"),
+            ApiResponse(code = 403, message = "User is not the judge")
+    )
+    fun vote(@PathVariable userId: String, @PathVariable cardId: String): ResponseEntity<Any> {
+        return try {
+            gameManager.vote(userId, cardId) // TODO - Handle other exception types
             ResponseEntity.noContent().build()
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.FORBIDDEN).build()
