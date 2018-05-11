@@ -19,6 +19,18 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
         return gameData
     }
 
+    fun startGame(userId: String): FOVGameData {
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        game.start(userId)
+        return game.getFOV(userId)
+    }
+
+    fun stopGame(userId: String): FOVGameData {
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        game.stop(userId)
+        return game.getFOV(userId)
+    }
+
     fun joinGame(userId: String, gameName: String): FOVGameData {
         val game = gamesByName[gameName] ?: throw Exception("Game does not exist with name: $gameName")
         game.join(userId)
@@ -35,10 +47,15 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
         }
     }
 
+    fun kick(kickerId: String, kickeeId: String) {
+        val kickerGame = gamesByUserId[kickerId] ?: throw Exception("Kicker is not in a game")
+        val kickeeGame = gamesByUserId[kickeeId] ?: throw Exception("Kickee is not in a game")
 
-    fun vote(userId: String, cardId: String) {
-        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
-        game.voteCard(userId, cardId)
+        if (kickerGame != kickeeGame) {
+            throw Exception("User is not in the same game")
+        }
+
+        kickerGame.kickUser(kickerId, kickeeId)
     }
 
     fun play(userId: String, cardId: String) {
@@ -46,6 +63,10 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
         game.playCard(userId, cardId)
     }
 
+    fun vote(userId: String, cardId: String) {
+        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
+        game.voteCard(userId, cardId)
+    }
 
     fun getUserFOV(userId: String): FOVGameData? {
         val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
