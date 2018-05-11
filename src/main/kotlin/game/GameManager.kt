@@ -12,11 +12,9 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
     fun createGame(userId: String, gameName: String, maxPlayers: Int, cardpackIds: List<String>): FOVGameData {
         val cards = cardFetcher.getCards(cardpackIds)
         val game = Game(gameName, maxPlayers, cards.first, cards.second, userFetcher)
-        game.join(userId)
-        val gameData = game.getFOV(userId)
         gamesByName[gameName] = game
-        gamesByUserId[userId] = game
-        return gameData
+        joinGame(userId, gameName)
+        return getUserFOV(userId)!!
     }
 
     fun startGame(userId: String): FOVGameData {
@@ -33,6 +31,11 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
 
     fun joinGame(userId: String, gameName: String): FOVGameData {
         val game = gamesByName[gameName] ?: throw Exception("Game does not exist with name: $gameName")
+
+        if (gamesByUserId[userId] != null) {
+            leaveGame(userId)
+        }
+
         game.join(userId)
         gamesByUserId[userId] = game
         return game.getFOV(userId)
@@ -70,8 +73,7 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
     }
 
     fun getUserFOV(userId: String): FOVGameData? {
-        val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
-        return game.getFOV(userId)
+        return gamesByUserId[userId]?.getFOV(userId)
     }
 
     fun getInfoList(): List<GameInfo> {
