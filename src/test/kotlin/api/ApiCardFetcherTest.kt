@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import model.BlackCard
 import model.User
 import model.WhiteCard
+import org.springframework.util.SocketUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -19,7 +20,7 @@ import kotlin.collections.ArrayList
 class ApiCardFetcherTest {
 
     companion object {
-        private const val port = 8080
+        private val port = SocketUtils.findAvailableTcpPort()
         private val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(port)
 
         @JvmStatic

@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Test
 import org.mockserver.integration.ClientAndServer
 import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
+import org.springframework.util.SocketUtils
 import java.net.URL
 import kotlin.test.assertEquals
 
 class ApiUserFetcherTest {
     companion object {
-        private const val port = 8080
+        private val port = SocketUtils.findAvailableTcpPort()
         private val mockServer: ClientAndServer = ClientAndServer.startClientAndServer(port)
 
         @JvmStatic
