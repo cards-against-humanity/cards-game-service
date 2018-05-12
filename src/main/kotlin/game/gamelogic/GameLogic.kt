@@ -121,13 +121,13 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Cannot play cards right now")
         } else if (players[userId] == null) {
             throw Exception("User is not in the game")
-        } else if (_whitePlayed[userId]!!.size == blackDeck.currentCard.answerFields) {
+        } else if (userHasPlayed(userId)) {
             throw Exception("You cannot play anymore cards for this round")
         }
 
         _whitePlayed[userId]!!.add(_players[userId]!!.playCard(cardId))
 
-        if (!players.all { player -> _whitePlayed[player.value.id]!!.size == blackDeck.currentCard.answerFields }) {
+        if (allUsersHavePlayed()) {
             stage = GameStage.JUDGE_PHASE
         }
     }
@@ -137,15 +137,33 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Must be the judge to vote for a card")
         } else if (stage != GameStage.JUDGE_PHASE) {
             throw Exception("Cannot vote for a card")
+        } else if (!allUsersHavePlayed()) {
+            throw Exception("Not all users have played")
         }
 
-        // TODO - Set winner
+        val winningPlayerId = (whitePlayed.entries.find { it.value.map { it.id }.contains(cardId) } ?: throw Exception("No players have played the specified card")).key
+        _players[winningPlayerId]!!.incrementScore()
+
+        // TODO - Check if player has reached max score
+    }
+
+    private fun userHasPlayed(userId: String): Boolean {
+        return _whitePlayed[userId]!!.size == currentBlackCard!!.answerFields
+    }
+
+    private fun allUsersHavePlayed(): Boolean {
+        players.values.map { it.id }.filter { it != judgeId }.forEach {
+            if (!userHasPlayed(it)) {
+                return false
+            }
+        }
+        return true
     }
 
     enum class GameStage {
         NOT_RUNNING,
         PLAY_PHASE,
         JUDGE_PHASE,
-        SCORE_PHASE
+        ROUND_END_PHASE
     }
 }

@@ -129,6 +129,28 @@ class GameLogicTest {
         assertEquals("Game is not running", e.message)
     }
 
+    @Test
+    fun judgeCanVoteAfterAllUsersHavePlayed() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        game.players.values.forEach {
+            if (it.id != game.judgeId) {
+                for (i in 1..game.currentBlackCard!!.answerFields) {
+                    game.playCard(it.id, it.hand[0].id)
+                }
+            }
+        }
+
+        val set = game.whitePlayed.toList().find { it.first != game.judgeId }!!
+        val winnerId = set.first
+        val winningCardId = set.second[0].id
+
+        game.voteCard(game.judgeId!!, winningCardId)
+    }
+
     private class TestWhiteCard(
             override val id: String,
             override val cardpackId: String,
