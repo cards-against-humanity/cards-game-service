@@ -30,7 +30,7 @@ class GameController(private val gameManager: GameManager) {
             ApiResponse(code = 400, message = "Game is already running or user is not in a game"),
             ApiResponse(code = 403, message = "User is not the owner")
     )
-    fun startGame(@PathVariable userId: String, @PathVariable gameName: String): ResponseEntity<FOVGameData> {
+    fun startGame(@PathVariable userId: String): ResponseEntity<FOVGameData> {
         return ResponseEntity.ok(gameManager.startGame(userId))
     }
 
