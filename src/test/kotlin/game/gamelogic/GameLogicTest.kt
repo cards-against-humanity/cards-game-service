@@ -84,7 +84,7 @@ class GameLogicTest {
     @Test
     fun gameSetToPlayPhaseWhenStarted() {
         addUsersAndStartGame()
-        assertEquals(GameLogic.GameStage.PLAY_PLASE, game.stage)
+        assertEquals(GameLogic.GameStage.PLAY_PHASE, game.stage)
     }
 
     @Test
