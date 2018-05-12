@@ -60,7 +60,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             players.size < minPlayersToStart -> throw Exception("Must have at least $minPlayersToStart players to start game")
             else -> {
                 playerManager.nextJudge()
-                stage = GameStage.PLAY_PLASE
+                stage = GameStage.PLAY_PHASE
             }
         }
 
@@ -117,7 +117,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     fun playCard(userId: String, cardId: String) {
         if (userId == judgeId) {
             throw Exception("Judge cannot play a card")
-        } else if(stage != GameStage.PLAY_PLASE) {
+        } else if(stage != GameStage.PLAY_PHASE) {
             throw Exception("Cannot play cards right now")
         } else if (players[userId] == null) {
             throw Exception("User is not in the game")
@@ -144,7 +144,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
 
     enum class GameStage {
         NOT_RUNNING,
-        PLAY_PLASE,
+        PLAY_PHASE,
         JUDGE_PHASE,
         SCORE_PHASE
     }
