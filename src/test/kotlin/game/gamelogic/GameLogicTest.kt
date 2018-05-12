@@ -118,6 +118,17 @@ class GameLogicTest {
         assertEquals(1, game.whitePlayed[player.id]!!.size)
     }
 
+    @Test
+    fun stopsGameWhenPlayerLeavesAndNotEnoughPlayersAreRemaining() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+        game.leave("3")
+        val e = assertThrows(Exception::class.java) { game.stop("1") }
+        assertEquals("Game is not running", e.message)
+    }
+
     private class TestWhiteCard(
             override val id: String,
             override val cardpackId: String,

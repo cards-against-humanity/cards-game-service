@@ -6,6 +6,7 @@ import model.WhiteCard
 
 class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
     private val handSize = 4
+    private val minPlayersToStart = 3
 
     var stage: GameStage = GameStage.NOT_RUNNING
         private set
@@ -41,8 +42,8 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
 
     init {
         val minCardCount = maxPlayers * (handSize + 4)
-        if (maxPlayers < 3) {
-            throw Exception("Max players must be at least 3")
+        if (maxPlayers < minPlayersToStart) {
+            throw Exception("Max players must be at least $minPlayersToStart")
         }
         if (maxPlayers > 20) {
             throw Exception("Max players cannot be greater than 20")
@@ -56,7 +57,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         when {
             userId != ownerId -> throw InsufficientAccessException("Must be owner to start game")
             isRunning -> throw Exception("Game is already running")
-            players.size < 3 -> throw Exception("Must have at least 3 players to start game")
+            players.size < minPlayersToStart -> throw Exception("Must have at least $minPlayersToStart players to start game")
             else -> {
                 playerManager.nextJudge()
                 stage = GameStage.PLAY_PLASE
@@ -68,7 +69,12 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     fun stop(userId: String) {
         if (userId != ownerId) {
             throw InsufficientAccessException("Must be owner to stop game")
-        } else if (!isRunning) {
+        }
+        stop()
+    }
+
+    private fun stop() {
+        if (!isRunning) {
             throw Exception("Game is not running")
         }
 
@@ -80,7 +86,6 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
 
         stage = GameStage.NOT_RUNNING
     }
-
 
     fun join(userId: String) {
         if (players.size == maxPlayers) {
@@ -95,6 +100,9 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         playerManager.removeUser(userId)
         _whitePlayed[userId]!!.forEach { card -> whiteDeck.discardCard(card) }
         _whitePlayed.remove(userId)
+        if (isRunning && players.size < minPlayersToStart) {
+            stop()
+        }
     }
 
     fun kickUser(kickerId: String, kickeeId: String) {
