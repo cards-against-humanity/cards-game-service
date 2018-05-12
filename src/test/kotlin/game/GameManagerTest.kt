@@ -48,7 +48,7 @@ class GameManagerTest {
         assertEquals(1, infoList.size)
         assertEquals(gameName, infoList[0].name)
         assertEquals(maxPlayers, infoList[0].maxPlayers)
-        assertEquals(registeredUserIds[0], infoList[0].ownerId)
+        assertEquals(registeredUserIds[0], infoList[0].owner.id)
         assertEquals(2, infoList[0].playerCount)
     }
 

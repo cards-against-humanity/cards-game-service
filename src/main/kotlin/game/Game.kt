@@ -57,7 +57,7 @@ class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, b
     }
 
     fun getInfo(): GameInfo {
-        return GameInfo(name, logic.players.size, maxPlayers, logic.ownerId ?: throw Exception("Game is empty"))
+        return GameInfo(name, logic.players.size, maxPlayers, userFetcher.getUser(logic.ownerId ?: throw Exception("Game is empty")))
     }
 
 }
