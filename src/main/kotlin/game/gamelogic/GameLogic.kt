@@ -96,7 +96,10 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     }
 
     fun leave(userId: String) {
-        // TODO - Check if user was judge and react accordingly
+        if (userId == judgeId) {
+            playerManager.resetPlayedCards()
+        }
+
         playerManager.removeUser(userId)
         _whitePlayed[userId]!!.forEach { card -> whiteDeck.discardCard(card) }
         _whitePlayed.remove(userId)
@@ -144,6 +147,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         val winningPlayerId = (whitePlayed.entries.find { it.value.map { it.id }.contains(cardId) } ?: throw Exception("No players have played the specified card")).key
         _players[winningPlayerId]!!.incrementScore()
 
+        // TODO - Redraw cards to players hands
         // TODO - Check if player has reached max score
     }
 

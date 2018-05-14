@@ -201,10 +201,21 @@ class PlayerManagerTest {
     }
 
     @Test
-    fun playingCardsDrawsNewCardsAutomatically() {
+    fun playingCardsDoesNotDrawNewCardsAutomatically() {
         playerManager.addUser("1")
         val player = playerManager.players["1"]!!
-        player.playCard(player.hand[0].id)
+        val playedCard = player.playCard(player.hand[0].id)
+        assert(!player.hand.contains(playedCard))
+        assertEquals(handSize - 1, playerManager.players["1"]!!.hand.size)
+    }
+
+    @Test
+    fun redrawsPlayerHand() {
+        playerManager.addUser("1")
+        val player = playerManager.players["1"]!!
+        val playedCard = player.playCard(player.hand[0].id)
+        playerManager.drawAllPlayersToFull()
+        assert(!player.hand.contains(playedCard))
         assertEquals(handSize, playerManager.players["1"]!!.hand.size)
     }
 

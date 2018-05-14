@@ -59,6 +59,14 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
     }
 
+    fun drawAllPlayersToFull() {
+        _players.forEach { it.value.clearPlayedCardsAndDrawToFull() }
+    }
+
+    fun resetPlayedCards() {
+        _players.forEach { it.value.resetPlayedCards() }
+    }
+
     fun reset() {
         _players.forEach { p -> p.value.score = 0 }
         judge = null
@@ -80,11 +88,15 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
 
         override val id: String = userId
         override var score = 0
-        override val hand: MutableList<WhiteCard> = ArrayList()
+        override val hand: List<WhiteCard>
+            get() { return _hand.filter { !playedCardIds.contains(it.id) } }
+
+        private val _hand: MutableList<WhiteCard> = ArrayList()
+        private val playedCardIds: MutableList<String> = ArrayList()
 
         init {
-            while (hand.size < handSize) {
-                hand.add(deck.drawCard())
+            while (_hand.size < handSize) {
+                _hand.add(deck.drawCard())
             }
         }
 
@@ -93,10 +105,26 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
 
         fun playCard(cardId: String): WhiteCard {
-            val card = hand.find { card -> card.id == cardId } ?: throw Exception("User does not have that card in their hand")
-            hand.add(deck.drawCard())
-            hand.removeAt(hand.indexOf(card))
+            if (playedCardIds.contains(cardId)) {
+                throw Exception("User has already played that card")
+            }
+            val card = _hand.find { it.id == cardId } ?: throw Exception("User does not have that card in their hand")
+            playedCardIds.add(cardId)
             return card
+        }
+
+        // TODO - Make this method private
+        fun clearPlayedCardsAndDrawToFull() {
+            _hand.removeIf { playedCardIds.contains(it.id) }
+            playedCardIds.clear()
+            while (_hand.size < handSize) {
+                _hand.add(deck.drawCard())
+            }
+        }
+
+        // TODO - Make this method private
+        fun resetPlayedCards() {
+            playedCardIds.clear()
         }
 
     }

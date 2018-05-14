@@ -47,6 +47,16 @@ class GameLogicTest {
         game.start("1")
     }
 
+    private fun playCardsForAllUsers() {
+        game.players.values.forEach {
+            if (it.id != game.judgeId) {
+                for (i in 1..game.currentBlackCard!!.answerFields) {
+                    game.playCard(it.id, it.hand[0].id)
+                }
+            }
+        }
+    }
+
     @Test
     fun startAndStopWithoutError() {
         addUsersAndStartGame()
@@ -130,25 +140,89 @@ class GameLogicTest {
     }
 
     @Test
+    fun gameEntersJudgePhaseOnceAllUsersHavePlayed() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        playCardsForAllUsers()
+
+        assertEquals(GameLogic.GameStage.JUDGE_PHASE, game.stage)
+    }
+
+    @Test
     fun judgeCanVoteAfterAllUsersHavePlayed() {
         game.join("1")
         game.join("2")
         game.join("3")
         game.start("1")
 
-        game.players.values.forEach {
-            if (it.id != game.judgeId) {
-                for (i in 1..game.currentBlackCard!!.answerFields) {
-                    game.playCard(it.id, it.hand[0].id)
-                }
-            }
-        }
+        playCardsForAllUsers()
 
         val set = game.whitePlayed.toList().find { it.first != game.judgeId }!!
         val winnerId = set.first
         val winningCardId = set.second[0].id
 
         game.voteCard(game.judgeId!!, winningCardId)
+    }
+
+    @Test
+    fun returnsPlayedCardsToUsersHandsIfJudgeLeavesDuringPlayPhase() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
+
+        val initialHand = game.players[nonJudgeUserId]!!.hand.toList()
+        game.playCard(nonJudgeUserId, initialHand[0].id)
+        game.leave(game.judgeId!!)
+
+        val currentHand = game.players[nonJudgeUserId]!!.hand
+
+        assertEquals(initialHand.size, currentHand.size)
+        currentHand.forEachIndexed { index, card ->
+            assertEquals(initialHand[index].id, card.id)
+        }
+    }
+
+    @Test
+    fun returnsPlayedCardsToUsersHandsIfJudgeLeavesDuringVotePhase() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
+
+        val initialHand = game.players[nonJudgeUserId]!!.hand.toList()
+
+        playCardsForAllUsers()
+
+        game.leave(game.judgeId!!)
+
+        val currentHand = game.players[nonJudgeUserId]!!.hand
+
+        assertEquals(initialHand.size, currentHand.size)
+        currentHand.forEachIndexed { index, card ->
+            assertEquals(initialHand[index].id, card.id)
+        }
+    }
+
+    @Test
+    fun doesNotAutomaticallyRedrawWhenPlayerPlaysCard() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
+        val initialHand = game.players[nonJudgeUserId]!!.hand.toList()
+        game.playCard(nonJudgeUserId, initialHand[0].id)
+        val currentHand = game.players[nonJudgeUserId]!!.hand
+        assertEquals(initialHand.size, currentHand.size + 1)
     }
 
     private class TestWhiteCard(
