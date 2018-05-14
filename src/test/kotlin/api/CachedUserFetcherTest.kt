@@ -39,7 +39,7 @@ class CachedUserFetcherTest {
     fun removedTimedOutElements() {
         cachedFetcher.getUser(userId)
         mockFetcher.removeUser(userId)
-        Thread.sleep(cacheTimeout.toMillis())
+        Thread.sleep(cacheTimeout.toMillis() + 50)
         assertThrows(NullPointerException::class.java) { cachedFetcher.getUser(userId) }
     }
 
