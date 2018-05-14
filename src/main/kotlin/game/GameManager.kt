@@ -62,9 +62,9 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
         return kickerGame.getFOV(kickerId)
     }
 
-    fun play(userId: String, cardId: String) {
+    fun play(userId: String, cardIds: List<String>) {
         val game = gamesByUserId[userId] ?: throw Exception("User is not in a game")
-        game.playCard(userId, cardId)
+        game.playCard(userId, cardIds)
     }
 
     fun vote(userId: String, cardId: String) {

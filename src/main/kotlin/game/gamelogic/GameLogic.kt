@@ -121,7 +121,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         leave(kickeeId)
     }
 
-    fun playCard(userId: String, cardId: String) {
+    fun playCards(userId: String, cardIds: List<String>) {
         if (userId == judgeId) {
             throw Exception("Judge cannot play a card")
         } else if(stage != GameStage.PLAY_PHASE) {
@@ -130,9 +130,14 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("User is not in the game")
         } else if (userHasPlayed(userId)) {
             throw Exception("You cannot play anymore cards for this round")
+        } else if (cardIds.size != currentBlackCard!!.answerFields) {
+            throw Exception("Must play exactly ${currentBlackCard!!.answerFields} cards")
         }
 
-        _whitePlayed[userId]!!.add(_players[userId]!!.playCard(cardId))
+        // TODO - Write UT that tries using duplicate card ids
+
+        val cards = cardIds.map { _players[userId]!!.playCard(it) }
+        _whitePlayed[userId] = cards.toMutableList()
 
         if (allUsersHavePlayed()) {
             stage = GameStage.JUDGE_PHASE

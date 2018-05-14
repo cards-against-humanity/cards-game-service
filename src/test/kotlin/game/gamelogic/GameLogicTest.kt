@@ -51,7 +51,7 @@ class GameLogicTest {
         game.players.values.forEach {
             if (it.id != game.judgeId) {
                 for (i in 1..game.currentBlackCard!!.answerFields) {
-                    game.playCard(it.id, it.hand[0].id)
+                    game.playCards(it.id, it.hand.subList(0, game.currentBlackCard!!.answerFields).map { it.id })
                 }
             }
         }
@@ -124,8 +124,8 @@ class GameLogicTest {
     fun addsPlayedCards() {
         addUsersAndStartGame()
         val player = game.playersList.find { player -> player.id != game.judgeId }!!
-        game.playCard(player.id, player.hand[0].id)
-        assertEquals(1, game.whitePlayed[player.id]!!.size)
+        game.playCards(player.id, player.hand.subList(0, game.currentBlackCard!!.answerFields).map { it.id })
+        assertEquals(game.currentBlackCard!!.answerFields, game.whitePlayed[player.id]!!.size)
     }
 
     @Test
@@ -177,7 +177,7 @@ class GameLogicTest {
         val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
 
         val initialHand = game.players[nonJudgeUserId]!!.hand.toList()
-        game.playCard(nonJudgeUserId, initialHand[0].id)
+        game.playCards(nonJudgeUserId, initialHand.subList(0, game.currentBlackCard!!.answerFields).map { it.id })
         game.leave(game.judgeId!!)
 
         val currentHand = game.players[nonJudgeUserId]!!.hand
@@ -212,7 +212,7 @@ class GameLogicTest {
     }
 
     @Test
-    fun doesNotAutomaticallyRedrawWhenPlayerPlaysCard() {
+    fun doesNotAutomaticallyRedrawWhenCardIsPlayed() {
         game.join("1")
         game.join("2")
         game.join("3")
@@ -220,7 +220,7 @@ class GameLogicTest {
 
         val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
         val initialHand = game.players[nonJudgeUserId]!!.hand.toList()
-        game.playCard(nonJudgeUserId, initialHand[0].id)
+        game.playCards(nonJudgeUserId, initialHand.subList(0, game.currentBlackCard!!.answerFields).map { it.id })
         val currentHand = game.players[nonJudgeUserId]!!.hand
         assertEquals(initialHand.size, currentHand.size + 1)
     }
@@ -254,6 +254,19 @@ class GameLogicTest {
         playCardsForAllUsers()
 
         assertEquals(GameLogic.GameStage.JUDGE_PHASE, game.stage)
+    }
+
+    @Test
+    fun cannotPlayMoreCardsThanCurrentBlackCardAllows() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
+        val initialHand = game.players[nonJudgeUserId]!!.hand.toList()
+        val e = assertThrows(Exception::class.java) { game.playCards(nonJudgeUserId, initialHand.subList(0, game.currentBlackCard!!.answerFields + 1).map { it.id }) }
+        assertEquals("Must play exactly ${game.currentBlackCard!!.answerFields} cards", e.message)
     }
 
     @Test

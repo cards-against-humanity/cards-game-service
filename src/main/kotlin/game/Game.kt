@@ -28,8 +28,8 @@ class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, b
         logic.kickUser(kickerId, kickeeId)
     }
 
-    fun playCard(userId: String, cardId: String) {
-        logic.playCard(userId, cardId)
+    fun playCard(userId: String, cardIds: List<String>) {
+        logic.playCards(userId, cardIds)
     }
 
     fun voteCard(userId: String, cardId: String) {
