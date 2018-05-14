@@ -78,8 +78,10 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Game is not running")
         }
 
-        _whitePlayed.forEach { cardList -> cardList.value.forEach { card -> whiteDeck.discardCard(card) } }
-        _whitePlayed = HashMap()
+        _whitePlayed.forEach { cardList ->
+            cardList.value.forEach { card -> whiteDeck.discardCard(card) }
+            cardList.value.clear()
+        }
         whiteDeck.reset()
         blackDeck.reset()
         playerManager.reset()
@@ -98,6 +100,8 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     fun leave(userId: String) {
         if (userId == judgeId) {
             playerManager.resetPlayedCards()
+            _whitePlayed.values.forEach { it.clear() }
+            stage = GameStage.ROUND_END_PHASE
         }
 
         playerManager.removeUser(userId)
@@ -147,8 +151,16 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         val winningPlayerId = (whitePlayed.entries.find { it.value.map { it.id }.contains(cardId) } ?: throw Exception("No players have played the specified card")).key
         _players[winningPlayerId]!!.incrementScore()
 
-        // TODO - Redraw cards to players hands
+        playerManager.drawAllPlayersToFull()
+        _whitePlayed.values.forEach {
+            it.forEach { whiteDeck.discardCard(it) }
+            it.clear()
+        }
         // TODO - Check if player has reached max score
+    }
+
+    fun startNextRound() {
+        stage = GameStage.PLAY_PHASE
     }
 
     private fun userHasPlayed(userId: String): Boolean {

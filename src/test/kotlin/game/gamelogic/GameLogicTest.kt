@@ -225,6 +225,53 @@ class GameLogicTest {
         assertEquals(initialHand.size, currentHand.size + 1)
     }
 
+    @Test
+    fun endRoundWhenJudgeLeavesDuringVoteProcess() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start("1")
+
+        playCardsForAllUsers()
+
+        game.leave(game.judgeId!!)
+
+        assertEquals(GameLogic.GameStage.ROUND_END_PHASE, game.stage)
+    }
+
+    @Test
+    fun gracefullyContinuesWhenJudgeLeavesDuringVotePhase() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start("1")
+
+        playCardsForAllUsers()
+        game.leave(game.judgeId!!)
+        game.startNextRound()
+        playCardsForAllUsers()
+
+        assertEquals(GameLogic.GameStage.JUDGE_PHASE, game.stage)
+    }
+
+    @Test
+    fun cyclesThroughMultipleRoundsWithoutError() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start("1")
+
+        for (i in 1..1000) {
+            playCardsForAllUsers()
+            val nonJudgePlayerId = game.playersList.find { it.id != game.judgeId }!!.id
+            game.voteCard(game.judgeId!!, game.whitePlayed[nonJudgePlayerId]!![0].id)
+            game.startNextRound()
+        }
+    }
+
     private class TestWhiteCard(
             override val id: String,
             override val cardpackId: String,
