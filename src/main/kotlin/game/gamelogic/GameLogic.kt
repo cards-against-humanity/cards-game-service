@@ -11,9 +11,9 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     var stage: GameStage = GameStage.NOT_RUNNING
         private set
 
-    private var _whitePlayed: MutableMap<String, MutableList<WhiteCard>> = HashMap()
-    private var whiteDeck = WhiteCardDeck(whiteCards)
-    private var blackDeck = BlackCardDeck(blackCards)
+    private val _whitePlayed: MutableMap<String, MutableList<WhiteCard>> = HashMap()
+    private val whiteDeck = WhiteCardDeck(whiteCards)
+    private val blackDeck = BlackCardDeck(blackCards)
     private val playerManager: PlayerManager = PlayerManager(handSize, whiteDeck)
 
     private val isRunning: Boolean
