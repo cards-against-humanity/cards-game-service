@@ -3,8 +3,8 @@ package game.gamelogic
 import model.WhiteCard
 
 class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) {
-    private val _playersList: MutableList<MutablePlayer> = ArrayList()
-    private val _players: MutableMap<String, MutablePlayer> = HashMap()
+    private val _playersList: MutableList<ClearablePlayer> = ArrayList()
+    private val _players: MutableMap<String, ClearablePlayer> = HashMap()
 
     val playersList: List<MutablePlayer> get() { return _playersList }
     val players: Map<String, MutablePlayer> get() { return _players }
@@ -15,7 +15,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
 
     fun addUser(userId: String) {
         assertNotInGame(userId)
-        val player = MutablePlayer(userId)
+        val player = ClearablePlayer(userId)
         if (_players.isEmpty()) {
             owner = player
         }
@@ -84,7 +84,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
     }
 
-    inner class MutablePlayer(userId: String): PlayerGameLogicModel {
+    private inner class ClearablePlayer(userId: String): MutablePlayer {
 
         override val id: String = userId
         override var score = 0
@@ -100,11 +100,11 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
             }
         }
 
-        fun incrementScore() {
+        override fun incrementScore() {
             score++
         }
 
-        fun playCard(cardId: String): WhiteCard {
+        override fun playCard(cardId: String): WhiteCard {
             if (playedCardIds.contains(cardId)) {
                 throw Exception("User has already played that card")
             }
@@ -113,7 +113,6 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
             return card
         }
 
-        // TODO - Make this method private
         fun clearPlayedCardsAndDrawToFull() {
             _hand.removeIf { playedCardIds.contains(it.id) }
             playedCardIds.clear()
@@ -122,10 +121,14 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
             }
         }
 
-        // TODO - Make this method private
         fun resetPlayedCards() {
             playedCardIds.clear()
         }
 
+    }
+
+    interface MutablePlayer : PlayerGameLogicModel {
+        fun incrementScore()
+        fun playCard(cardId: String): WhiteCard
     }
 }
