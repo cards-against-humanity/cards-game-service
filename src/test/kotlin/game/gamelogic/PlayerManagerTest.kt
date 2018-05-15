@@ -8,10 +8,10 @@ import kotlin.test.*
 
 class PlayerManagerTest {
 
-    val handSize = 4
-    val deckSize = 1000
-    var deck: WhiteCardDeck = WhiteCardDeck(listOf())
-    var playerManager = PlayerManager(handSize, deck)
+    private val handSize = 4
+    private val deckSize = 1000
+    private var deck: WhiteCardDeck = WhiteCardDeck(listOf(), handSize)
+    private var playerManager = PlayerManager(handSize, deck)
 
     @BeforeEach
     fun reset() {
@@ -19,7 +19,7 @@ class PlayerManagerTest {
         for (i in 1..deckSize) {
             cards.add(TestWhiteCard(i.toString(), "1", i.toString()))
         }
-        deck = WhiteCardDeck(cards)
+        deck = WhiteCardDeck(cards, handSize)
         playerManager = PlayerManager(handSize, deck)
     }
 
@@ -196,26 +196,8 @@ class PlayerManagerTest {
 
     @Test
     fun addCardsToPlayerHands() {
+        deck.addUser("1")
         playerManager.addUser("1")
-        assertEquals(handSize, playerManager.players["1"]!!.hand.size)
-    }
-
-    @Test
-    fun playingCardsDoesNotDrawNewCardsAutomatically() {
-        playerManager.addUser("1")
-        val player = playerManager.players["1"]!!
-        val playedCard = player.playCard(player.hand[0].id)
-        assert(!player.hand.contains(playedCard))
-        assertEquals(handSize - 1, playerManager.players["1"]!!.hand.size)
-    }
-
-    @Test
-    fun redrawsPlayerHand() {
-        playerManager.addUser("1")
-        val player = playerManager.players["1"]!!
-        val playedCard = player.playCard(player.hand[0].id)
-        playerManager.drawAllPlayersToFull()
-        assert(!player.hand.contains(playedCard))
         assertEquals(handSize, playerManager.players["1"]!!.hand.size)
     }
 

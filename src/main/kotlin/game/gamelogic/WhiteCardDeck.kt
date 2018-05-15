@@ -28,7 +28,7 @@ class WhiteCardDeck(cards: List<WhiteCard>, private val handSize: Int) {
 
     fun addUser(userId: String) {
         if (_userHands[userId] != null) {
-            throw Exception("User is already added")
+            throw Exception("User is already in the game")
         }
 
         _userHands[userId] = ArrayList()

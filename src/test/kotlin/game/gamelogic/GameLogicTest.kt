@@ -172,6 +172,7 @@ class GameLogicTest {
         game.join("1")
         game.join("2")
         game.join("3")
+        game.join("4")
         game.start("1")
 
         val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
@@ -193,6 +194,7 @@ class GameLogicTest {
         game.join("1")
         game.join("2")
         game.join("3")
+        game.join("4")
         game.start("1")
 
         val nonJudgeUserId = game.players.values.map { it.id }.find { it != game.judgeId }!!
