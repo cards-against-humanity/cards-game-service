@@ -82,6 +82,7 @@ class WhiteCardDeck(cards: List<WhiteCard>, private val handSize: Int) {
         _userHands.keys.forEach { userId ->
             discardPile.addAll(_userHands[userId]!!)
             _userHands[userId]!!.clear()
+            playedCardIds[userId] = ArrayList()
         }
 
         drawAllUsersToFull()

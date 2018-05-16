@@ -102,6 +102,14 @@ class WhiteCardDeckTest {
         deck.userHands["1"]!!.forEachIndexed { index, card -> assertEquals(initialHand[index].id, card.id) }
     }
 
+    @Test
+    fun canPlayCardsAfterResettingDeckWithoutError() {
+        deck.addUser("1")
+        deck.playCards("1", deck.userHands["1"]!!.subList(0, 4).map { it.id })
+        deck.resetAndDrawNewHands()
+        deck.playCards("1", deck.userHands["1"]!!.subList(0, 4).map { it.id })
+    }
+
 
     private class TestWhiteCard(
             override val id: String,
