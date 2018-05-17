@@ -4,16 +4,18 @@ import model.WhiteCard
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assert
 import kotlin.test.assertEquals
 
 class WhiteCardDeckTest {
 
+    private val handSize = 8
     private var cards: MutableList<WhiteCard> = ArrayList()
     private var deck: WhiteCardDeck
 
     init {
         fillCardList()
-        deck = WhiteCardDeck(cards)
+        deck = WhiteCardDeck(cards, handSize)
     }
 
     private fun fillCardList() {
@@ -26,7 +28,7 @@ class WhiteCardDeckTest {
     fun reset() {
         cards = ArrayList()
         fillCardList()
-        deck = WhiteCardDeck(cards)
+        deck = WhiteCardDeck(cards, 8)
     }
 
     @Test
@@ -35,7 +37,7 @@ class WhiteCardDeckTest {
         val size = cards.size
 
         for (i in 1..5) {
-            deck.discardCard(deck.drawCard())
+            deck.addUser(i.toString())
         }
 
         assertEquals(size, cards.size)
@@ -43,53 +45,69 @@ class WhiteCardDeckTest {
     }
 
     @Test
-    fun cyclesThroughAllCards() {
+    fun canAddUsersWithoutError() {
         for (i in 1..10) {
-            val cardIds: MutableSet<String> = HashSet()
-
-            for (j in 1..100) {
-                val card = deck.drawCard()
-                assert(!cardIds.contains(card.id))
-                cardIds.add(card.id)
-                deck.discardCard(card)
-            }
-
-            for (j in 1..100) {
-                assert(cardIds.contains(i.toString()))
-            }
+            deck.addUser(i.toString())
         }
     }
 
     @Test
-    fun errorsOnEmptyDeck() {
-        for (i in 1..100) {
-            deck.drawCard()
-        }
-
-        val e = assertThrows(Exception::class.java, { deck.drawCard() })
-        assertEquals("No cards are left in the deck", e.message)
+    fun keepsMapKeysUpToDate() {
+        assertEquals(0, deck.userHands.size)
+        assertEquals(0, deck.whitePlayed.size)
+        deck.addUser("1")
+        assertEquals(1, deck.userHands.size)
+        assertEquals(1, deck.whitePlayed.size)
+        assertEquals(handSize, deck.userHands["1"]!!.size)
+        assertEquals(0, deck.whitePlayed["1"]!!.size)
+        deck.addUser("2")
+        assertEquals(2, deck.userHands.size)
+        assertEquals(2, deck.whitePlayed.size)
+        assertEquals(handSize, deck.userHands["2"]!!.size)
+        assertEquals(0, deck.whitePlayed["2"]!!.size)
+        deck.removeUser("1")
+        deck.removeUser("2")
+        assertEquals(0, deck.userHands.size)
+        assertEquals(0, deck.whitePlayed.size)
     }
 
     @Test
-    fun recyclesCards() {
-        for (i in 1..10) {
-            val cards: MutableList<WhiteCard> = ArrayList()
-            for (j in 1..100) {
-                cards.add(deck.drawCard())
-            }
+    fun addsToPlayedCardsMap() {
+        deck.addUser("1")
 
-            cards.forEach { card -> deck.discardCard(card) }
-        }
+        val playedIds = deck.userHands["1"]!!.subList(0, 4).map { it.id }
+        deck.playCards("1", playedIds)
+        assertEquals(4, deck.whitePlayed["1"]!!.size)
+        assert(deck.whitePlayed["1"]!!.map { it.id }.containsAll(playedIds))
     }
 
     @Test
-    fun resetDeck() {
-        for (i in 1..50) {
-            deck.discardCard(deck.drawCard())
-        }
-        deck.reset()
+    fun removesCardsFromHandWhenPlayingThem() {
+        deck.addUser("1")
 
-        cyclesThroughAllCards()
+        val playedIds = deck.userHands["1"]!!.subList(0, 4).map { it.id }
+        deck.playCards("1", playedIds)
+        assertEquals(handSize - 4, deck.userHands["1"]!!.size)
+    }
+
+    @Test
+    fun maintainsCardOrderWhenRevertingPlayedCards() {
+        deck.addUser("1")
+
+        val initialHand = deck.userHands["1"]!!.toList()
+
+        deck.playCards("1", deck.userHands["1"]!!.subList(0, 4).map { it.id })
+        deck.revertPlayedCards()
+        assertEquals(handSize, deck.userHands["1"]!!.size)
+        deck.userHands["1"]!!.forEachIndexed { index, card -> assertEquals(initialHand[index].id, card.id) }
+    }
+
+    @Test
+    fun canPlayCardsAfterResettingDeckWithoutError() {
+        deck.addUser("1")
+        deck.playCards("1", deck.userHands["1"]!!.subList(0, 4).map { it.id })
+        deck.resetAndDrawNewHands()
+        deck.playCards("1", deck.userHands["1"]!!.subList(0, 4).map { it.id })
     }
 
 

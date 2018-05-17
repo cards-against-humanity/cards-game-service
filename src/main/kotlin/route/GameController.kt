@@ -20,7 +20,7 @@ class GameController(private val gameManager: GameManager) {
             ApiResponse(code = 200, message = "Game successfully created")
     )
     fun createGame(@PathVariable userId: String, @RequestBody gameData: CreateGameData): ResponseEntity<FOVGameData> {
-        return ResponseEntity.ok(gameManager.createGame(userId, gameData.gameName, gameData.maxPlayers, gameData.cardpackIds))
+        return ResponseEntity.ok(gameManager.createGame(userId, gameData.gameName, gameData.maxPlayers, gameData.maxScore, gameData.cardpackIds))
     }
 
     @RequestMapping(value = "/{userId}/game/start", method = [RequestMethod.POST])
@@ -133,6 +133,7 @@ class GameController(private val gameManager: GameManager) {
     data class CreateGameData(
             @JsonProperty("gameName") val gameName: String,
             @JsonProperty("maxPlayers") val maxPlayers: Int,
+            @JsonProperty("maxScore") val maxScore: Int,
             @JsonProperty("cardpackIds") val cardpackIds: List<String>
     )
 

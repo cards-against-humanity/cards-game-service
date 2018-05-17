@@ -4,16 +4,18 @@ import game.*
 import model.BlackCard
 import model.WhiteCard
 
-class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
+class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
     private val handSize = 4
     private val minPlayersToStart = 3
 
     var stage: GameStage = GameStage.NOT_RUNNING
         private set
 
-    private var _whitePlayed: MutableMap<String, MutableList<WhiteCard>> = HashMap()
-    private var whiteDeck = WhiteCardDeck(whiteCards)
-    private var blackDeck = BlackCardDeck(blackCards)
+    var winnerId: String? = null
+        private set
+
+    private val whiteDeck = WhiteCardDeck(whiteCards, handSize)
+    private val blackDeck = BlackCardDeck(blackCards)
     private val playerManager: PlayerManager = PlayerManager(handSize, whiteDeck)
 
     private val isRunning: Boolean
@@ -38,7 +40,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         get() = if (isRunning) { blackDeck.currentCard } else { null }
 
     val whitePlayed: Map<String, List<WhiteCard>>
-        get() = _whitePlayed
+        get() = whiteDeck.whitePlayed
 
     init {
         val minCardCount = maxPlayers * (handSize + 4)
@@ -54,6 +56,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     }
 
     fun start(userId: String) {
+        winnerId = null
         when {
             userId != ownerId -> throw InsufficientAccessException("Must be owner to start game")
             isRunning -> throw Exception("Game is already running")
@@ -78,11 +81,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Game is not running")
         }
 
-        _whitePlayed.forEach { cardList ->
-            cardList.value.forEach { card -> whiteDeck.discardCard(card) }
-            cardList.value.clear()
-        }
-        whiteDeck.reset()
+        whiteDeck.resetAndDrawNewHands()
         blackDeck.reset()
         playerManager.reset()
 
@@ -93,20 +92,18 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         if (players.size == maxPlayers) {
             throw Exception("Game is full")
         }
+        whiteDeck.addUser(userId)
         playerManager.addUser(userId)
-        _whitePlayed[userId] = ArrayList()
     }
 
     fun leave(userId: String) {
         if (userId == judgeId) {
-            playerManager.resetPlayedCards()
-            _whitePlayed.values.forEach { it.clear() }
+            whiteDeck.revertPlayedCards()
             stage = GameStage.ROUND_END_PHASE
         }
 
         playerManager.removeUser(userId)
-        _whitePlayed[userId]!!.forEach { card -> whiteDeck.discardCard(card) }
-        _whitePlayed.remove(userId)
+        whiteDeck.removeUser(userId)
         if (isRunning && players.size < minPlayersToStart) {
             stop()
         }
@@ -128,16 +125,11 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
             throw Exception("Cannot play cards right now")
         } else if (players[userId] == null) {
             throw Exception("User is not in the game")
-        } else if (userHasPlayed(userId)) {
-            throw Exception("You cannot play anymore cards for this round")
         } else if (cardIds.size != currentBlackCard!!.answerFields) {
             throw Exception("Must play exactly ${currentBlackCard!!.answerFields} cards")
         }
 
-        // TODO - Write UT that tries using duplicate card ids
-
-        val cards = cardIds.map { _players[userId]!!.playCard(it) }
-        _whitePlayed[userId] = cards.toMutableList()
+        whiteDeck.playCards(userId, cardIds)
 
         if (allUsersHavePlayed()) {
             stage = GameStage.JUDGE_PHASE
@@ -156,20 +148,26 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         val winningPlayerId = (whitePlayed.entries.find { it.value.map { it.id }.contains(cardId) } ?: throw Exception("No players have played the specified card")).key
         _players[winningPlayerId]!!.incrementScore()
 
-        playerManager.drawAllPlayersToFull()
-        _whitePlayed.values.forEach {
-            it.forEach { whiteDeck.discardCard(it) }
-            it.clear()
+        if (_players[winningPlayerId]!!.score == maxScore) {
+            winnerId = winningPlayerId
+            stop()
+        } else {
+            playerManager.nextJudge()
+            whiteDeck.discardPlayedCardsAndRedraw()
+            stage = GameStage.ROUND_END_PHASE
         }
-        // TODO - Check if player has reached max score
     }
 
     fun startNextRound() {
+        if (stage != GameStage.ROUND_END_PHASE) {
+            throw Exception("Cannot start the next round at this time")
+        }
         stage = GameStage.PLAY_PHASE
+        blackDeck.setNewCard()
     }
 
     private fun userHasPlayed(userId: String): Boolean {
-        return _whitePlayed[userId]!!.size == currentBlackCard!!.answerFields
+        return whitePlayed[userId]!!.size == currentBlackCard!!.answerFields
     }
 
     private fun allUsersHavePlayed(): Boolean {

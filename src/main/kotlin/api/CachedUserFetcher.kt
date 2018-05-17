@@ -20,11 +20,11 @@ class CachedUserFetcher(private val fetcher: UserFetcher, maximumSize: Long, ite
             }
         }
         val missingUsers = fetcher.getUsers(missingUserIds)
-        missingUsers.forEach { user ->
-            users[user.id] = user
-            cache.put(user.id, user)
+        missingUsers.forEach {
+            users[it.id] = it
+            cache.put(it.id, it)
         }
-        return userIds.map { id -> users[id]!! }
+        return userIds.map { users[it]!! }
     }
 
 }

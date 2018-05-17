@@ -4,9 +4,9 @@ import api.UserFetcher
 import game.gamelogic.GameLogic
 import model.*
 
-class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
+class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
 
-    private val logic = GameLogic(maxPlayers, whiteCards, blackCards)
+    private val logic = GameLogic(maxPlayers, maxScore, whiteCards, blackCards)
 
     fun start(userId: String) {
         logic.start(userId)
@@ -42,15 +42,15 @@ class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, b
 
 
     fun getFOV(userId: String): FOVGameData {
-        val users = userFetcher.getUsers(logic.playersList.map { playerEntry -> playerEntry.id })
-        val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }.filter { p -> p.id != userId }
+        val users = userFetcher.getUsers(logic.playersList.map { it.id })
+        val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }.filter { it.id != userId }
 
         val cardsPlayed: MutableMap<String, List<WhiteCard?>> = HashMap()
         for (entry in logic.whitePlayed) {
             cardsPlayed[entry.key] = if (entry.key == userId) {
                 entry.value
             } else {
-                entry.value.map { _ -> null }
+                entry.value.map { null }
             }
         }
         return FOVGameData(name, maxPlayers, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard)

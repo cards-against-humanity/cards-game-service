@@ -26,9 +26,8 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
     fun removeUser(userId: String) {
         assertInGame(userId)
         var judgeIndex = _playersList.indexOf(judge)
-        _players[userId]!!.hand.forEach { card -> deck.discardCard(card) }
         _players.remove(userId)
-        _playersList.removeIf { player -> player.id == userId }
+        _playersList.removeIf { it.id == userId }
         if (_players.isEmpty()) {
             owner = null
         } else if (owner != null && userId == owner!!.id) {
@@ -59,14 +58,6 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
     }
 
-    fun drawAllPlayersToFull() {
-        _players.forEach { it.value.clearPlayedCardsAndDrawToFull() }
-    }
-
-    fun resetPlayedCards() {
-        _players.forEach { it.value.resetPlayedCards() }
-    }
-
     fun reset() {
         _players.forEach { p -> p.value.score = 0 }
         judge = null
@@ -84,51 +75,18 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         }
     }
 
-    private inner class ClearablePlayer(userId: String): MutablePlayer {
+    private inner class ClearablePlayer(override val id: String): MutablePlayer {
 
-        override val id: String = userId
         override var score = 0
-        override val hand: List<WhiteCard>
-            get() { return _hand.filter { !playedCardIds.contains(it.id) } }
-
-        private val _hand: MutableList<WhiteCard> = ArrayList()
-        private val playedCardIds: MutableList<String> = ArrayList()
-
-        init {
-            while (_hand.size < handSize) {
-                _hand.add(deck.drawCard())
-            }
-        }
+        override val hand: List<WhiteCard> get() { return deck.userHands[id]!! }
 
         override fun incrementScore() {
             score++
-        }
-
-        override fun playCard(cardId: String): WhiteCard {
-            if (playedCardIds.contains(cardId)) {
-                throw Exception("User has already played that card")
-            }
-            val card = _hand.find { it.id == cardId } ?: throw Exception("User does not have that card in their hand")
-            playedCardIds.add(cardId)
-            return card
-        }
-
-        fun clearPlayedCardsAndDrawToFull() {
-            _hand.removeIf { playedCardIds.contains(it.id) }
-            playedCardIds.clear()
-            while (_hand.size < handSize) {
-                _hand.add(deck.drawCard())
-            }
-        }
-
-        fun resetPlayedCards() {
-            playedCardIds.clear()
         }
 
     }
 
     interface MutablePlayer : PlayerGameLogicModel {
         fun incrementScore()
-        fun playCard(cardId: String): WhiteCard
     }
 }
