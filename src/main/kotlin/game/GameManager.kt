@@ -9,9 +9,9 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
     private val gamesByName: MutableMap<String, Game> = HashMap()
     private val gamesByUserId: MutableMap<String, Game> = HashMap()
 
-    fun createGame(userId: String, gameName: String, maxPlayers: Int, cardpackIds: List<String>): FOVGameData {
+    fun createGame(userId: String, gameName: String, maxPlayers: Int, maxScore: Int, cardpackIds: List<String>): FOVGameData {
         val cards = cardFetcher.getCards(cardpackIds)
-        val game = Game(gameName, maxPlayers, cards.first, cards.second, userFetcher)
+        val game = Game(gameName, maxPlayers, maxScore, cards.first, cards.second, userFetcher)
         gamesByName[gameName] = game
         joinGame(userId, gameName)
         return getUserFOV(userId)!!

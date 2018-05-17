@@ -4,9 +4,9 @@ import api.UserFetcher
 import game.gamelogic.GameLogic
 import model.*
 
-class Game(val name: String, val maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
+class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
 
-    private val logic = GameLogic(maxPlayers, whiteCards, blackCards)
+    private val logic = GameLogic(maxPlayers, maxScore, whiteCards, blackCards)
 
     fun start(userId: String) {
         logic.start(userId)
