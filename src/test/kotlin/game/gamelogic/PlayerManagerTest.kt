@@ -133,6 +133,7 @@ class PlayerManagerTest {
         }
         for (i in 1..200) {
             playerManager.nextJudge()
+            assertNotNull(playerManager.judge)
         }
     }
 
