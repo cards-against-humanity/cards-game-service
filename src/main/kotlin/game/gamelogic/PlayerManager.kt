@@ -27,7 +27,7 @@ class PlayerManager(private val handSize: Int, private val deck: WhiteCardDeck) 
         assertInGame(userId)
         var judgeIndex = _playersList.indexOf(judge)
         _players.remove(userId)
-        _playersList.removeIf { player -> player.id == userId }
+        _playersList.removeIf { it.id == userId }
         if (_players.isEmpty()) {
             owner = null
         } else if (owner != null && userId == owner!!.id) {
