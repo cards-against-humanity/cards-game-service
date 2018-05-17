@@ -12,6 +12,7 @@ class GameTest {
 
     private val gameName = "game_name"
     private val maxPlayers = 4
+    private val maxScore = 6
 
     private var game: Game
     private var userFetcher: MockUserFetcher
@@ -30,7 +31,7 @@ class GameTest {
         for (i in 1..100) {
             blackCards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
         }
-        return Game(gameName, maxPlayers, whiteCards, blackCards, fetcher)
+        return Game(gameName, maxPlayers, maxScore, whiteCards, blackCards, fetcher)
     }
 
     @BeforeEach

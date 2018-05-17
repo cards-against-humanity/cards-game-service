@@ -12,6 +12,8 @@ import kotlin.test.assertTrue
 
 class GameLogicTest {
 
+    private val maxScore = 6
+    private val maxPlayers = 4
     private var game: GameLogic
 
     init {
@@ -27,7 +29,7 @@ class GameLogicTest {
         for (i in 1..100) {
             blackCards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
         }
-        return GameLogic(4, whiteCards, blackCards)
+        return GameLogic(maxPlayers, maxScore, whiteCards, blackCards)
     }
 
     @BeforeEach
@@ -50,9 +52,7 @@ class GameLogicTest {
     private fun playCardsForAllUsers() {
         game.players.values.forEach {
             if (it.id != game.judgeId) {
-                for (i in 1..game.currentBlackCard!!.answerFields) {
-                    game.playCards(it.id, it.hand.subList(0, game.currentBlackCard!!.answerFields).map { it.id })
-                }
+                game.playCards(it.id, it.hand.subList(0, game.currentBlackCard!!.answerFields).map { it.id })
             }
         }
     }
@@ -161,10 +161,26 @@ class GameLogicTest {
         playCardsForAllUsers()
 
         val set = game.whitePlayed.toList().find { it.first != game.judgeId }!!
+        val winningCardId = set.second[0].id
+
+        game.voteCard(game.judgeId!!, winningCardId)
+    }
+
+    @Test
+    fun incrementsScoreWhenCardIsVotedFor() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.start("1")
+
+        playCardsForAllUsers()
+
+        val set = game.whitePlayed.toList().find { it.first != game.judgeId }!!
         val winnerId = set.first
         val winningCardId = set.second[0].id
 
         game.voteCard(game.judgeId!!, winningCardId)
+        assertEquals(1, game.players[winnerId]!!.score)
     }
 
     @Test
@@ -277,14 +293,77 @@ class GameLogicTest {
         game.join("2")
         game.join("3")
         game.join("4")
-        game.start("1")
 
         for (i in 1..1000) {
+            if (game.stage == GameLogic.GameStage.NOT_RUNNING) {
+                game.start(game.ownerId!!)
+            }
             playCardsForAllUsers()
             val nonJudgePlayerId = game.playersList.find { it.id != game.judgeId }!!.id
-            game.voteCard(game.judgeId!!, game.whitePlayed[nonJudgePlayerId]!![0].id)
-            game.startNextRound()
+            val judgeId = game.judgeId!!
+            val whitePlayedNonJudge = game.whitePlayed[nonJudgePlayerId]!!
+            val nonPlayedCardId = whitePlayedNonJudge[0].id
+            game.voteCard(judgeId, nonPlayedCardId)
+            if (game.stage == GameLogic.GameStage.ROUND_END_PHASE) {
+                game.startNextRound()
+            }
         }
+    }
+
+    @Test
+    fun winnerIdIsNullForNewGame() {
+        assertNull(game.winnerId)
+    }
+
+    @Test
+    fun winnerIdIsCorrectWhenGameEnds() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start(game.ownerId!!)
+
+        var winnerId = ""
+
+        while (game.stage != GameLogic.GameStage.NOT_RUNNING) {
+            playCardsForAllUsers()
+            val nonJudgePlayerId = game.playersList.find { it.id != game.judgeId }!!.id
+            winnerId = nonJudgePlayerId
+            val judgeId = game.judgeId!!
+            val whitePlayedNonJudge = game.whitePlayed[nonJudgePlayerId]!!
+            val nonPlayedCardId = whitePlayedNonJudge[0].id
+            game.voteCard(judgeId, nonPlayedCardId)
+            if (game.stage == GameLogic.GameStage.ROUND_END_PHASE) {
+                game.startNextRound()
+            }
+        }
+
+        assertEquals(winnerId, game.winnerId)
+    }
+
+    @Test
+    fun winnerIdIsNullAfterFinishingGameAndRestarting() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start(game.ownerId!!)
+
+        while (game.stage != GameLogic.GameStage.NOT_RUNNING) {
+            playCardsForAllUsers()
+            val nonJudgePlayerId = game.playersList.find { it.id != game.judgeId }!!.id
+            val judgeId = game.judgeId!!
+            val whitePlayedNonJudge = game.whitePlayed[nonJudgePlayerId]!!
+            val nonPlayedCardId = whitePlayedNonJudge[0].id
+            game.voteCard(judgeId, nonPlayedCardId)
+            if (game.stage == GameLogic.GameStage.ROUND_END_PHASE) {
+                game.startNextRound()
+            }
+        }
+
+        game.start(game.ownerId!!)
+
+        assertNull(game.winnerId)
     }
 
     private class TestWhiteCard(

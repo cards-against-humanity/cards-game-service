@@ -41,7 +41,7 @@ class GameManagerTest {
     fun addsGameToInfoList() {
         val gameName = "game_one"
         val maxPlayers = 4
-        gameManager.createGame(registeredUserIds[0], gameName, maxPlayers, listOf(registeredCardpackIds[0]))
+        gameManager.createGame(registeredUserIds[0], gameName, maxPlayers, 6, listOf(registeredCardpackIds[0]))
         gameManager.joinGame(registeredUserIds[1], gameName)
 
         val infoList = gameManager.getInfoList()
@@ -55,7 +55,7 @@ class GameManagerTest {
     @Test
     fun removesGameFromInfoListWhenAllUsersLeave() {
         val gameName = "game_one"
-        gameManager.createGame(registeredUserIds[0], gameName, 4, listOf(registeredCardpackIds[0]))
+        gameManager.createGame(registeredUserIds[0], gameName, 4, 6, listOf(registeredCardpackIds[0]))
         gameManager.joinGame(registeredUserIds[1], gameName)
         gameManager.joinGame(registeredUserIds[2], gameName)
         gameManager.joinGame(registeredUserIds[3], gameName)
@@ -72,8 +72,8 @@ class GameManagerTest {
     fun removeUserFromOldGameWhenCreatingNewOne() {
         val gameOneName = "game_one"
         val gameTwoName = "game_two"
-        gameManager.createGame(registeredUserIds[0], gameOneName, 4, listOf(registeredCardpackIds[0]))
-        gameManager.createGame(registeredUserIds[0], gameTwoName, 4, listOf(registeredCardpackIds[0]))
+        gameManager.createGame(registeredUserIds[0], gameOneName, 4, 6, listOf(registeredCardpackIds[0]))
+        gameManager.createGame(registeredUserIds[0], gameTwoName, 4, 6, listOf(registeredCardpackIds[0]))
 
         val infoList = gameManager.getInfoList()
         assertEquals(1, infoList.size)
@@ -84,8 +84,8 @@ class GameManagerTest {
     fun removeUserFromOldGameWhenJoiningNewOne() {
         val gameOneName = "game_one"
         val gameTwoName = "game_two"
-        gameManager.createGame(registeredUserIds[0], gameOneName, 4, listOf(registeredCardpackIds[0]))
-        gameManager.createGame(registeredUserIds[1], gameTwoName, 4, listOf(registeredCardpackIds[0]))
+        gameManager.createGame(registeredUserIds[0], gameOneName, 4, 6, listOf(registeredCardpackIds[0]))
+        gameManager.createGame(registeredUserIds[1], gameTwoName, 4, 6, listOf(registeredCardpackIds[0]))
 
         gameManager.joinGame(registeredUserIds[2], gameOneName)
         gameManager.joinGame(registeredUserIds[2], gameTwoName)

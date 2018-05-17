@@ -4,11 +4,14 @@ import game.*
 import model.BlackCard
 import model.WhiteCard
 
-class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
+class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard> /* TODO - Add socket handler as arg */) {
     private val handSize = 4
     private val minPlayersToStart = 3
 
     var stage: GameStage = GameStage.NOT_RUNNING
+        private set
+
+    var winnerId: String? = null
         private set
 
     private val whiteDeck = WhiteCardDeck(whiteCards, handSize)
@@ -53,6 +56,7 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
     }
 
     fun start(userId: String) {
+        winnerId = null
         when {
             userId != ownerId -> throw InsufficientAccessException("Must be owner to start game")
             isRunning -> throw Exception("Game is already running")
@@ -144,12 +148,22 @@ class GameLogic(private var maxPlayers: Int, whiteCards: List<WhiteCard>, blackC
         val winningPlayerId = (whitePlayed.entries.find { it.value.map { it.id }.contains(cardId) } ?: throw Exception("No players have played the specified card")).key
         _players[winningPlayerId]!!.incrementScore()
 
-        whiteDeck.discardPlayedCardsAndRedraw()
-        // TODO - Check if player has reached max score
+        if (_players[winningPlayerId]!!.score == maxScore) {
+            winnerId = winningPlayerId
+            stop()
+        } else {
+            playerManager.nextJudge()
+            whiteDeck.discardPlayedCardsAndRedraw()
+            stage = GameStage.ROUND_END_PHASE
+        }
     }
 
     fun startNextRound() {
+        if (stage != GameStage.ROUND_END_PHASE) {
+            throw Exception("Cannot start the next round at this time")
+        }
         stage = GameStage.PLAY_PHASE
+        blackDeck.setNewCard()
     }
 
     private fun userHasPlayed(userId: String): Boolean {
