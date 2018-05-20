@@ -1,5 +1,6 @@
 package game.gamelogic
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import game.*
 import model.BlackCard
 import model.WhiteCard
@@ -180,9 +181,9 @@ class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCar
     }
 
     enum class GameStage {
-        NOT_RUNNING,
-        PLAY_PHASE,
-        JUDGE_PHASE,
-        ROUND_END_PHASE
+        @JsonProperty("notRunning") NOT_RUNNING,
+        @JsonProperty("playPhase") PLAY_PHASE,
+        @JsonProperty("judgePhase") JUDGE_PHASE,
+        @JsonProperty("roundEndPhase") ROUND_END_PHASE
     }
 }

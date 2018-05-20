@@ -1,8 +1,11 @@
 package model
 
+import game.gamelogic.GameLogic
+
 data class FOVGameData(
         val name: String,
         val maxPlayers: Int,
+        val stage: GameLogic.GameStage,
         val hand: List<WhiteCard>,
         val players: List<FOVPlayer>,
         val judgeId: String?,

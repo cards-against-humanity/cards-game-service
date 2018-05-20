@@ -53,7 +53,7 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
                 entry.value.map { null }
             }
         }
-        return FOVGameData(name, maxPlayers, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard)
+        return FOVGameData(name, maxPlayers, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard)
     }
 
     fun getInfo(): GameInfo {
