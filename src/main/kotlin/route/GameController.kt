@@ -74,13 +74,13 @@ class GameController(private val gameManager: GameManager) {
         return ResponseEntity.ok(gameManager.kick(kickerId, kickeeId))
     }
 
-    @RequestMapping(value = "/{userId}/game/play/{cardId}", method = [RequestMethod.PUT])
+    @RequestMapping(value = "/{userId}/game/play", method = [RequestMethod.PUT])
     @ApiOperation(value = "Play a card")
     @ApiResponses(
             ApiResponse(code = 204, message = "Play succeeded"),
             ApiResponse(code = 403, message = "Invalid authorization")
     )
-    fun playCard(@PathVariable userId: String, @PathVariable cardIds: List<String>): ResponseEntity<Any> {
+    fun playCard(@PathVariable userId: String, @RequestBody cardIds: List<String>): ResponseEntity<Any> {
         return try {
             gameManager.play(userId, cardIds) // TODO - Handle other exception types
             ResponseEntity.noContent().build()
@@ -102,6 +102,16 @@ class GameController(private val gameManager: GameManager) {
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
+    }
+
+    @RequestMapping(value = "/{userId}/game/continue", method = [RequestMethod.PUT])
+    @ApiOperation(value = "Start next round")
+    @ApiResponses(
+            ApiResponse(code = 204, message = "Next round started")
+    )
+    fun startNextRound(@PathVariable userId: String): ResponseEntity<Any> {
+        gameManager.startNextRound(userId)
+        return ResponseEntity.noContent().build()
     }
 
     @RequestMapping(value = "/{userId}/game", method = [RequestMethod.GET])

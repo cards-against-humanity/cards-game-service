@@ -36,6 +36,10 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
         logic.voteCard(userId, cardId)
     }
 
+    fun startNextRound() {
+        logic.startNextRound()
+    }
+
     fun isEmpty(): Boolean {
         return logic.players.isEmpty()
     }
