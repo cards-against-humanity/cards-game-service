@@ -2,11 +2,17 @@ package game
 
 import api.UserFetcher
 import game.gamelogic.GameLogic
+import game.messaging.GameMessageModule
+import game.messaging.MessageModel
 import model.*
 
 class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
+    companion object {
+        private const val messageModuleSize = 100
+    }
 
     private val logic = GameLogic(maxPlayers, maxScore, whiteCards, blackCards)
+    private val messages = GameMessageModule(messageModuleSize)
 
     fun start(userId: String) {
         logic.start(userId)
@@ -45,6 +51,14 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
     }
 
 
+    fun addMessage(userId: String, text: String) {
+        if (logic.players[userId] == null) {
+            throw Exception("Cannot post message if you are not currently in this game")
+        }
+        messages.addMessage(MessageModel(userId, text))
+    }
+
+
     fun getFOV(userId: String): FOVGameData {
         val users = userFetcher.getUsers(logic.playersList.map { it.id })
         val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }.filter { it.id != userId }
@@ -57,7 +71,7 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
                 entry.value.map { null }
             }
         }
-        return FOVGameData(name, maxPlayers, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard)
+        return FOVGameData(name, maxPlayers, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard, messages.getRecentMessages(messageModuleSize).map { Message(userFetcher.getUser(it.userId), it.text) /* TODO - Fetch users in parallel */ })
     }
 
     fun getInfo(): GameInfo {

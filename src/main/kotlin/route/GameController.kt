@@ -114,6 +114,16 @@ class GameController(private val gameManager: GameManager) {
         return ResponseEntity.noContent().build()
     }
 
+    @RequestMapping(value = "/{userId}/game/messages", method = [RequestMethod.PUT])
+    @ApiOperation(value = "Post message to game")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Message successfully posted")
+    )
+    fun sendMessage(@PathVariable userId: String, @RequestBody message: String): ResponseEntity<FOVGameData> {
+        gameManager.sendMessage(userId, message)
+        return ResponseEntity.ok(gameManager.getUserFOV(userId))
+    }
+
     @RequestMapping(value = "/{userId}/game", method = [RequestMethod.GET])
     @ApiOperation(value = "Get game info for a specific user")
     @ApiResponses(
