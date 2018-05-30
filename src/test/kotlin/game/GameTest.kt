@@ -7,6 +7,7 @@ import model.WhiteCard
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertNotNull
 
 class GameTest {
 
@@ -56,11 +57,11 @@ class GameTest {
 
 
     @Test
-    fun fovDoesNotIncludeSelfInPlayerList() {
+    fun fovIncludesSelfInPlayerList() {
         game.join("1")
         game.join("2")
-        assertNull(game.getFOV("1").players.find { p -> p.id == "1" })
-        assertNull(game.getFOV("2").players.find { p -> p.id == "2" })
+        assertNotNull(game.getFOV("1").players.find { p -> p.id == "1" })
+        assertNotNull(game.getFOV("2").players.find { p -> p.id == "2" })
     }
 
 
