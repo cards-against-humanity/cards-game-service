@@ -64,6 +64,14 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
         val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }.filter { it.id != userId }
 
         val cardsPlayed: MutableMap<String, List<WhiteCard?>> = HashMap()
+
+        // TODO - Test that cardsPlayedAnonymous is null except during vote stage
+        val cardsPlayedAnonymous: List<List<WhiteCard>>? = if (logic.currentBlackCard !== null && logic.whitePlayed.values.all { it.size == logic.currentBlackCard!!.answerFields }) {
+            logic.whitePlayed.values.shuffled()
+        } else {
+            null
+        }
+
         for (entry in logic.whitePlayed) {
             cardsPlayed[entry.key] = if (entry.key == userId) {
                 entry.value
@@ -71,7 +79,8 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
                 entry.value.map { null }
             }
         }
-        return FOVGameData(name, maxPlayers, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, logic.currentBlackCard, messages.getRecentMessages(messageModuleSize).map { Message(userFetcher.getUser(it.userId), it.text) /* TODO - Fetch users in parallel */ })
+
+        return FOVGameData(name, maxPlayers, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, cardsPlayedAnonymous, logic.currentBlackCard, logic.winnerId, messages.getRecentMessages(messageModuleSize).map { Message(userFetcher.getUser(it.userId), it.text) /* TODO - Fetch users in parallel */ })
     }
 
     fun getInfo(): GameInfo {
