@@ -19,6 +19,6 @@ class GameMessageModule(private val maxSize: Int) {
     }
 
     fun getRecentMessages(count: Int): List<MessageModel> {
-        return messageModels.takeLast(count)
+        return messageModels.takeLast(count).reversed()
     }
 }
