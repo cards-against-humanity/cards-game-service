@@ -64,7 +64,7 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
         val players = logic.playersList.mapIndexed { index, player -> FOVPlayer(player.id, users[index].name, player.score) }
 
         // TODO - Test that cardsPlayedAnonymous is null except during vote stage
-        val cardsPlayedAnonymous: List<List<WhiteCard>>? = if (logic.currentBlackCard !== null && logic.whitePlayed.values.all { it.size == logic.currentBlackCard!!.answerFields }) {
+        val cardsPlayedAnonymous: List<List<WhiteCard>>? = if (logic.currentBlackCard !== null && logic.whitePlayed.filter { it.key != logic.judgeId }.values.all { it.size == logic.currentBlackCard!!.answerFields }) {
             logic.whitePlayed.filter { it.key != logic.judgeId }.values.shuffled()
         } else {
             null
