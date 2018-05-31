@@ -30,6 +30,7 @@ class GameManager(private val userFetcher: UserFetcher, private val cardFetcher:
     }
 
     fun joinGame(userId: String, gameName: String): FOVGameData {
+        // TODO - Prevent joining the game you are already in
         val game = gamesByName[gameName] ?: throw Exception("Game does not exist with name: $gameName")
 
         if (gamesByUserId[userId] != null) {
