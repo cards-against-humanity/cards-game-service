@@ -5,6 +5,8 @@ import game.gamelogic.GameLogic
 import game.messaging.GameMessageModule
 import game.messaging.MessageModel
 import model.*
+import java.security.SecureRandom
+import java.util.*
 
 class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
     companion object {
@@ -13,6 +15,11 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
 
     private val logic = GameLogic(maxPlayers, maxScore, whiteCards, blackCards)
     private val messages = GameMessageModule(messageModuleSize)
+    private val randomizerSeed: ByteArray = ByteArray(256)
+
+    init {
+        SecureRandom().nextBytes(randomizerSeed)
+    }
 
     fun start(userId: String) {
         logic.start(userId)
@@ -65,7 +72,7 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
 
         // TODO - Test that cardsPlayedAnonymous is null except during vote stage
         val cardsPlayedAnonymous: List<List<WhiteCard>>? = if (logic.currentBlackCard !== null && logic.whitePlayed.filter { it.key != logic.judgeId }.values.all { it.size == logic.currentBlackCard!!.answerFields }) {
-            logic.whitePlayed.filter { it.key != logic.judgeId }.values.shuffled()
+            logic.whitePlayed.filter { it.key != logic.judgeId }.values.shuffled(SecureRandom(randomizerSeed))
         } else {
             null
         }
