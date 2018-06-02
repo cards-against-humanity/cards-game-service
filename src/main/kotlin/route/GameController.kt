@@ -81,12 +81,8 @@ class GameController(private val gameManager: GameManager) {
             ApiResponse(code = 403, message = "Invalid authorization")
     )
     fun playCard(@PathVariable userId: String, @RequestBody cardIds: List<String>): ResponseEntity<Any> {
-        return try {
-            gameManager.play(userId, cardIds) // TODO - Handle other exception types
-            ResponseEntity.noContent().build()
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
+        gameManager.play(userId, cardIds)
+        return ResponseEntity.noContent().build()
     }
 
     @RequestMapping(value = "/{userId}/game/vote/{cardId}", method = [RequestMethod.PUT])
@@ -96,12 +92,8 @@ class GameController(private val gameManager: GameManager) {
             ApiResponse(code = 403, message = "User is not the judge")
     )
     fun vote(@PathVariable userId: String, @PathVariable cardId: String): ResponseEntity<Any> {
-        return try {
-            gameManager.vote(userId, cardId) // TODO - Handle other exception types
-            ResponseEntity.noContent().build()
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
+        gameManager.vote(userId, cardId)
+        return ResponseEntity.noContent().build()
     }
 
     @RequestMapping(value = "/{userId}/game/continue", method = [RequestMethod.PUT])
@@ -130,11 +122,7 @@ class GameController(private val gameManager: GameManager) {
             ApiResponse(code = 200, message = "Game info retrieved")
     )
     fun getGameForUser(@PathVariable userId: String): ResponseEntity<FOVGameData> {
-        return try {
-            ResponseEntity.ok(gameManager.getUserFOV(userId))
-        } catch (e: Exception) {
-            ResponseEntity.notFound().build()
-        }
+        return ResponseEntity.ok(gameManager.getUserFOV(userId))
     }
 
     @RequestMapping(value = "/games", method = [RequestMethod.GET])
@@ -143,11 +131,7 @@ class GameController(private val gameManager: GameManager) {
             ApiResponse(code = 200, message = "Games retrieved")
     )
     fun getGameInfoList(): ResponseEntity<List<GameInfo>> {
-        return try {
-            ResponseEntity.ok(gameManager.getInfoList())
-        } catch (e: Exception) {
-            ResponseEntity.notFound().build()
-        }
+        return ResponseEntity.ok(gameManager.getInfoList())
     }
 
     data class CreateGameData(
