@@ -8,7 +8,7 @@ import model.*
 import java.security.SecureRandom
 import java.util.*
 
-class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
+class Game(val name: String, private val maxPlayers: Int, private val maxScore: Int, whiteCards: List<WhiteCard>, blackCards: List<BlackCard>, private val userFetcher: UserFetcher) {
     companion object {
         private const val messageModuleSize = 100
     }
@@ -89,7 +89,7 @@ class Game(val name: String, private val maxPlayers: Int, maxScore: Int, whiteCa
             }
         }
 
-        return FOVGameData(name, maxPlayers, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, cardsPlayedAnonymous, logic.currentBlackCard, logic.winnerId, messages.getRecentMessages(messageModuleSize).map { Message(userFetcher.getUser(it.userId), it.text) /* TODO - Fetch users in parallel */ })
+        return FOVGameData(name, maxPlayers, maxScore, logic.stage, logic.players[userId]!!.hand, players, logic.judgeId, logic.ownerId!!, cardsPlayed, cardsPlayedAnonymous, logic.currentBlackCard, logic.winnerId, messages.getRecentMessages(messageModuleSize).map { Message(userFetcher.getUser(it.userId), it.text) /* TODO - Fetch users in parallel */ })
     }
 
     fun getInfo(): GameInfo {

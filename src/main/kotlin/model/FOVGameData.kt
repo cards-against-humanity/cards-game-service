@@ -6,6 +6,7 @@ import game.Message
 data class FOVGameData(
         val name: String,
         val maxPlayers: Int,
+        val maxScore: Int,
         val stage: GameLogic.GameStage,
         val hand: List<WhiteCard>,
         val players: List<FOVPlayer>,
