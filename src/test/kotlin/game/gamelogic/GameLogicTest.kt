@@ -20,16 +20,24 @@ class GameLogicTest {
         game = createGame()
     }
 
+    private fun generateWhiteCards(count: Int): List<WhiteCard> {
+        val cards: MutableList<WhiteCard> = ArrayList()
+        for (i in 1..count) {
+            cards.add(TestWhiteCard(i.toString(), "1", i.toString()))
+        }
+        return cards
+    }
+
+    private fun generateBlackCards(count: Int): List<BlackCard> {
+        val cards: MutableList<BlackCard> = ArrayList()
+        for (i in 1..count) {
+            cards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
+        }
+        return cards
+    }
+
     private fun createGame(): GameLogic {
-        val whiteCards: MutableList<WhiteCard> = ArrayList()
-        val blackCards: MutableList<BlackCard> = ArrayList()
-        for (i in 1..100) {
-            whiteCards.add(TestWhiteCard(i.toString(), "1", i.toString()))
-        }
-        for (i in 1..100) {
-            blackCards.add(TestBlackCard(i.toString(), "1", i.toString(), 1))
-        }
-        return GameLogic(maxPlayers, maxScore, whiteCards, blackCards)
+        return GameLogic(maxPlayers, maxScore, generateWhiteCards(100), generateBlackCards(100))
     }
 
     @BeforeEach
@@ -390,6 +398,12 @@ class GameLogicTest {
         }
 
         assertEquals(maxScore, highestScore)
+    }
+
+    @Test
+    fun cannotCreateGameWithMaxScoreOfZero() {
+        val e = assertThrows(Exception::class.java) { GameLogic(maxPlayers, 0, generateWhiteCards(100), generateBlackCards(100)) }
+        assertEquals("Max score must be a positive number", e.message)
     }
 
     private class TestWhiteCard(

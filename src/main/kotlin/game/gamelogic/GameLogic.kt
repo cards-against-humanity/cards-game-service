@@ -54,6 +54,9 @@ class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCar
         if (whiteCards.size < minCardCount) {
             throw Exception("Not enough white cards, need ${minCardCount - whiteCards.size} more with this many players")
         }
+        if (maxScore < 1) {
+            throw Exception("Max score must be a positive number")
+        }
     }
 
     fun start(userId: String) {
