@@ -5,10 +5,7 @@ import model.WhiteCard
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class GameLogicTest {
 
@@ -398,6 +395,28 @@ class GameLogicTest {
         }
 
         assertEquals(maxScore, highestScore)
+    }
+
+    @Test
+    fun changesJudgeWhenStartingNewRound() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start(game.ownerId!!)
+
+        var judgeId = game.judgeId!!
+
+        playCardsForAllUsers()
+        val nonJudgePlayerId = game.playersList.find { it.id != game.judgeId }!!.id
+        val whitePlayedNonJudge = game.whitePlayed[nonJudgePlayerId]!!
+        val nonPlayedCardId = whitePlayedNonJudge[0].id
+        game.voteCard(judgeId, nonPlayedCardId)
+
+        assertEquals(judgeId, game.judgeId)
+        game.startNextRound()
+        assertNotEquals(judgeId, game.judgeId)
+        assertNotNull(game.judgeId)
     }
 
     @Test

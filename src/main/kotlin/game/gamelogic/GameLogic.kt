@@ -156,8 +156,6 @@ class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCar
             winnerId = winningPlayerId
             stop()
         } else {
-            playerManager.nextJudge()
-            whiteDeck.discardPlayedCardsAndRedraw()
             stage = GameStage.ROUND_END_PHASE
         }
     }
@@ -166,8 +164,10 @@ class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCar
         if (stage != GameStage.ROUND_END_PHASE) {
             throw Exception("Cannot start the next round at this time")
         }
-        stage = GameStage.PLAY_PHASE
+        playerManager.nextJudge()
+        whiteDeck.discardPlayedCardsAndRedraw()
         blackDeck.setNewCard()
+        stage = GameStage.PLAY_PHASE
     }
 
     private fun userHasPlayed(userId: String): Boolean {

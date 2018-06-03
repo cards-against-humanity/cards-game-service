@@ -7,6 +7,7 @@ import model.WhiteCard
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class GameTest {
@@ -62,6 +63,61 @@ class GameTest {
         game.join("2")
         assertNotNull(game.getFOV("1").players.find { p -> p.id == "1" })
         assertNotNull(game.getFOV("2").players.find { p -> p.id == "2" })
+    }
+
+    @Test
+    fun fowIncludesAllPlayedCardsByUserOnceRoundIsOver() {
+        val userIds: MutableList<String> = mutableListOf("1", "2", "3", "4")
+
+        userIds.forEach { game.join(it) }
+        game.start(userIds[0])
+
+        userIds.forEach {
+            val fov = game.getFOV(it)
+            if (fov.judgeId != it) {
+                game.playCard(it, fov.hand.subList(0, fov.currentBlackCard!!.answerFields).map { it.id })
+            }
+        }
+
+        val judgeFov = game.getFOV(game.getFOV(userIds[0]).judgeId!!)
+
+        game.voteCard(judgeFov.judgeId!!, judgeFov.whitePlayedAnonymous!![0][0].id)
+
+        val nonJudgeFov = game.getFOV(userIds.find { it != game.getFOV(it).judgeId }!!)
+
+        assertEquals(userIds.size - 1, nonJudgeFov.whitePlayed.size)
+        nonJudgeFov.whitePlayed.values.forEach {
+            assertEquals(judgeFov.currentBlackCard!!.answerFields, it.size)
+            it.forEach { assertNotNull(it) }
+        }
+    }
+
+    @Test
+    fun fowShowsAllPlayedCardsByUserAsNullBeforeJudgeVotes() {
+        val userIds: MutableList<String> = mutableListOf("1", "2", "3", "4")
+
+        userIds.forEach { game.join(it) }
+        game.start(userIds[0])
+
+        userIds.forEach {
+            val fov = game.getFOV(it)
+            if (fov.judgeId != it) {
+                game.playCard(it, fov.hand.subList(0, fov.currentBlackCard!!.answerFields).map { it.id })
+            }
+        }
+
+        val nonJudgeUserId = userIds.find { it != game.getFOV(it).judgeId }!!
+        val nonJudgeFov = game.getFOV(nonJudgeUserId)
+
+        assertEquals(userIds.size - 1, nonJudgeFov.whitePlayed.size)
+        nonJudgeFov.whitePlayed.forEach {
+            assertEquals(nonJudgeFov.currentBlackCard!!.answerFields, it.value.size)
+            if (it.key == nonJudgeUserId) {
+                it.value.forEach { assertNotNull(it) }
+            } else {
+                it.value.forEach { assertNull(it) }
+            }
+        }
     }
 
 

@@ -81,7 +81,7 @@ class Game(val name: String, private val maxPlayers: Int, private val maxScore: 
 
         for (entry in logic.whitePlayed) {
             if (entry.key != logic.judgeId) {
-                cardsPlayed[entry.key] = if (entry.key == userId) {
+                cardsPlayed[entry.key] = if (entry.key == userId || logic.stage == GameLogic.GameStage.ROUND_END_PHASE) {
                     entry.value
                 } else {
                     entry.value.map { null }
