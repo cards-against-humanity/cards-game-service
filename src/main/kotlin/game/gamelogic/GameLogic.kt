@@ -152,8 +152,8 @@ class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCar
         val winningPlayerId = (whitePlayed.entries.find { it.value.map { it.id }.contains(cardId) } ?: throw Exception("No players have played the specified card")).key
         _players[winningPlayerId]!!.incrementScore()
 
+        winnerId = winningPlayerId
         if (_players[winningPlayerId]!!.score == maxScore) {
-            winnerId = winningPlayerId
             stop()
         } else {
             stage = GameStage.ROUND_END_PHASE
@@ -164,6 +164,7 @@ class GameLogic(private val maxPlayers: Int, private val maxScore: Int, whiteCar
         if (stage != GameStage.ROUND_END_PHASE) {
             throw Exception("Cannot start the next round at this time")
         }
+        winnerId = null
         playerManager.nextJudge()
         whiteDeck.discardPlayedCardsAndRedraw()
         blackDeck.setNewCard()

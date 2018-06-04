@@ -372,6 +372,29 @@ class GameLogicTest {
     }
 
     @Test
+    fun winnerIdIsCorrectAfterJudgeHasVoted() {
+        game.join("1")
+        game.join("2")
+        game.join("3")
+        game.join("4")
+        game.start(game.ownerId!!)
+
+        var winnerId: String? = null
+
+        while (game.stage != GameLogic.GameStage.ROUND_END_PHASE) {
+            playCardsForAllUsers()
+            val nonJudgePlayerId = game.playersList.find { it.id != game.judgeId }!!.id
+            val judgeId = game.judgeId!!
+            val whitePlayedNonJudge = game.whitePlayed[nonJudgePlayerId]!!
+            val nonPlayedCardId = whitePlayedNonJudge[0].id
+            game.voteCard(judgeId, nonPlayedCardId)
+            winnerId = nonJudgePlayerId
+        }
+
+        assertEquals(winnerId, game.winnerId)
+    }
+
+    @Test
     fun gameStopsAfterMaxScoreIsReached() {
         game.join("1")
         game.join("2")
