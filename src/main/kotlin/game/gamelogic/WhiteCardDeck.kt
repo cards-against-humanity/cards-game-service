@@ -12,7 +12,8 @@ class WhiteCardDeck(cards: List<WhiteCard>, private val handSize: Int) {
 
     val whitePlayed: Map<String, List<WhiteCard>> get() {
         val whitePlayed: MutableMap<String, List<WhiteCard>> = HashMap()
-        _userHands.forEach { userId, hand -> whitePlayed[userId] = hand.filter { card -> playedCardIds[userId]!!.contains(card.id) } }
+        // TODO - Test line below to ensure that cards are returned in the order they are played
+        playedCardIds.forEach { userId, cardIds -> whitePlayed[userId] = cardIds.map { cardId -> _userHands[userId]!!.find { it.id == cardId }!! } }
         return whitePlayed
     }
 
